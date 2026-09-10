@@ -16,6 +16,10 @@
 <meta name="twitter:image" content="cover.jpg">
 <meta name="theme-color" content="#F7F4EC">
 <meta name="apple-mobile-web-app-title" content="Brew Your Type">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="apple-touch-icon" sizes="180x180" href="icon.png">
 <link rel="icon" href="icon.png">
 <link rel="apple-touch-icon" href="icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -302,7 +306,7 @@ footer{margin-top:30px;padding-top:16px;border-top:1px dashed var(--line-2);
   <footer>
     บริษัท ไชยจันลา จำกัด · RANGSAN Academy · SAO Café · RANGSAN Coffee<br>
     จองรอบถัดไป LINE @saocafe · IG saocafe_official<br>
-    <span style="opacity:.55">v16 · 10 ก.ย. 2569</span>
+    <span style="opacity:.55">v19 · 10 ก.ย. 2569</span>
   </footer>
 </div>
 <div class="admin" id="admin"><div class="adminbox" id="adminBox"></div></div>
@@ -507,7 +511,7 @@ function fileToDataURL(file, maxW){
 }
 let CFG = JSON.parse(JSON.stringify(DEFAULTS));
 const CFG_KEY = "byt-config-v1";
-const APP_VER = "v16 · 10 ก.ย. 2569";
+const APP_VER = "v19 · 10 ก.ย. 2569";
 async function loadCFG(){
   let remote = null, local = null;
   try{
@@ -580,6 +584,18 @@ function applyCFG(){
 const lines = a => (a||[]).join("\n");
 const parseLines = s => String(s).split("\n").map(x => x.trim()).filter(Boolean);
 
+function imgRow(key, label){
+  const v = CFG.img[key] || "";
+  const isUrl = v && !v.startsWith("data:");
+  return `<div class="imgrow" style="flex-wrap:wrap">
+    ${v ? `<img src="${v}" alt="">` : `<div class="none">ยังไม่มี</div>`}
+    <div style="flex:1;font-size:14px">${label}${isUrl ? ' <span style="color:var(--ink-3);font-size:12px">(ลิงก์)</span>' : ""}</div>
+    <button data-pick="${key}">เลือกไฟล์</button>
+    ${v ? `<button data-del="${key}">ลบ</button>` : ""}
+    <input data-url="${key}" placeholder="หรือวางลิงก์รูป https://..." value="${isUrl ? v : ""}"
+      style="flex-basis:100%;margin-top:8px;font-size:13.5px;padding:9px 11px">
+  </div>`;
+}
 function openAdmin(){
   const box = document.getElementById("adminBox");
   box.innerHTML = `
@@ -619,33 +635,16 @@ function adminForm(){
     <label>Instagram</label><input id="adIG" value="${esc(CFG.ig)}">
     <label>รูปกราฟิกของร้าน</label>
     ${[["logo","โลโก้บนหัวแอป"],["cover","ภาพหน้าแรก (ใส่แล้วแทนหัวข้อความทั้งบล็อก)"],
-       ["includes","ภาพบล็อก 90 นาทีนี้คุณจะได้"],["pcbg","พื้นหลังโปสการ์ด (แนวตั้ง 1080×1900)"],["NT","NT — Clear"],["NF","NF — Bloom"],
-       ["SJ","SJ — Root"],["SP","SP — Spark"],
+       ["includes","ภาพบล็อก 90 นาทีนี้คุณจะได้"],["pcbg","พื้นหลังโปสการ์ด (แนวตั้ง 1080×1900)"],
+       ["NT","NT — Clear"],["NF","NF — Bloom"],["SJ","SJ — Root"],["SP","SP — Spark"],
        ["char_NT","ตัวละคร NT — Clear"],["char_NF","ตัวละคร NF — Bloom"],
-       ["char_SJ","ตัวละคร SJ — Root"],["char_SP","ตัวละคร SP — Spark"]].map(([k,lb]) => `
-      <div class="imgrow">
-        ${CFG.img[k] ? `<img src="${CFG.img[k]}" alt="">` : `<div class="none">ยังไม่มี</div>`}
-        <div style="flex:1;font-size:14px">${lb}</div>
-        <button data-pick="${k}">เลือกรูป</button>
-        ${CFG.img[k] ? `<button data-del="${k}">ลบ</button>` : ""}
-      </div>`).join("")}
+       ["char_SJ","ตัวละคร SJ — Root"],["char_SP","ตัวละคร SP — Spark"]]
+      .map(([k,lb]) => imgRow(k,lb)).join("")}
     <label>รูปประจำไทป์ทั้ง 16 (ใส่เฉพาะที่มีก็ได้)</label>
-    ${Object.keys(TYPES).map(t => `
-      <div class="imgrow">
-        ${CFG.img["type_"+t] ? `<img src="${CFG.img["type_"+t]}" alt="">` : `<div class="none">ยังไม่มี</div>`}
-        <div style="flex:1;font-size:14px">${t} · ${esc(TYPES[t].n)}</div>
-        <button data-pick="type_${t}">เลือกรูป</button>
-        ${CFG.img["type_"+t] ? `<button data-del="type_${t}">ลบ</button>` : ""}
-      </div>`).join("")}
-    <p class="adminnote" style="margin-top:6px">ไทป์ไหนใส่รูปไว้ จะใช้รูปนั้นแทนรูปตัวละครของกลุ่ม · ไทป์ที่ไม่ใส่จะใช้รูปตัวละครกลุ่มแทน</p>
+    ${Object.keys(TYPES).map(t => imgRow("type_"+t, t+" · "+esc(TYPES[t].n))).join("")}
+    <p class="adminnote" style="margin-top:6px">ทุกช่องเลือกได้ 2 แบบ — อัปไฟล์จากเครื่อง (ฝังลงไฟล์ตั้งค่า ไฟล์ใหญ่) หรือวางลิงก์รูป (ไฟล์เล็ก ทุกเครื่องเห็นเหมือนกันทันที) · ไทป์ไหนใส่รูปไว้ จะใช้รูปนั้นแทนรูปตัวละครของกลุ่ม · ไทป์ที่ไม่ใส่จะใช้รูปตัวละครกลุ่มแทน</p>
     ${allSubs().length ? `<label>รูปกลุ่มย่อยในแต่ละบ้าน</label>
-      ${allSubs().map(s => `
-        <div class="imgrow">
-          ${CFG.img[s.key] ? `<img src="${CFG.img[s.key]}" alt="">` : `<div class="none">ยังไม่มี</div>`}
-          <div style="flex:1;font-size:14px">${esc(s.code)} · ${esc(s.name)}</div>
-          <button data-pick="${esc(s.key)}">เลือกรูป</button>
-          ${CFG.img[s.key] ? `<button data-del="${esc(s.key)}">ลบ</button>` : ""}
-        </div>`).join("")}`
+      ${allSubs().map(s => imgRow(s.key, esc(s.code)+" · "+esc(s.name))).join("")}`
       : `<p class="adminnote" style="margin-top:10px">ยังไม่มีกลุ่มย่อย — พิมพ์ <b>ชื่อกลุ่มย่อย: ของ1, ของ2</b> ในช่องบ้านด้านบน แล้วกดบันทึก ช่องใส่รูปของกลุ่มย่อยจะขึ้นตรงนี้</p>`}
     <input type="file" id="adImgFile" accept="image/*" style="display:none">
     <label>รูปที่ลูกค้าถ่าย — วางบนโปสการ์ด</label>
@@ -687,6 +686,14 @@ function adminForm(){
   let pickKey = "";
   box.querySelectorAll("[data-pick]").forEach(b => b.onclick = () => {
     pickKey = b.dataset.pick; imgFile.value = ""; imgFile.click();
+  });
+  box.querySelectorAll("[data-url]").forEach(inp => {
+    inp.onchange = () => {
+      const k = inp.dataset.url, u = inp.value.trim();
+      if(u && !/^https?:\/\//i.test(u)){ inp.value = ""; return; }
+      CFG.img[k] = u;
+      saveCFG(); applyCFG(); adminForm();
+    };
   });
   box.querySelectorAll("[data-del]").forEach(b => b.onclick = () => {
     CFG.img[b.dataset.del] = ""; saveCFG(); applyCFG(); adminForm();
@@ -1526,6 +1533,27 @@ function vCard(){
   });
 }
 
+(function(){
+  try{
+    const icon = new URL("icon.png", location.href).href;
+    const m = {
+      name: "Brew Your Type · SAO Café",
+      short_name: "Brew Your Type",
+      start_url: location.pathname + location.search,
+      display: "standalone",
+      background_color: "#F7F4EC",
+      theme_color: "#F7F4EC",
+      icons: [
+        {src: icon, sizes: "192x192", type: "image/png", purpose: "any"},
+        {src: icon, sizes: "512x512", type: "image/png", purpose: "any"}
+      ]
+    };
+    const url = URL.createObjectURL(new Blob([JSON.stringify(m)], {type:"application/manifest+json"}));
+    const l = document.createElement("link");
+    l.rel = "manifest"; l.href = url;
+    document.head.appendChild(l);
+  }catch(e){}
+})();
 bindAdminTap();
 render();
 loadCFG();
