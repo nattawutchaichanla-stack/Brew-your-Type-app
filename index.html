@@ -196,7 +196,9 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--world);outline-
 .photoslot{position:relative;z-index:3;margin:0 0 18px;border-radius:16px;overflow:hidden;
   aspect-ratio:4/5;display:grid;place-items:center;cursor:pointer;
   background:rgba(255,255,255,.10);border:1.5px dashed rgba(255,255,255,.45)}
-.photoslot img{width:100%;height:100%;object-fit:cover;display:block}
+.photoslot.has{border:6px solid #FFFDF6;border-style:solid;background:#FFFDF6;
+  box-shadow:0 6px 18px rgba(20,20,15,.28)}
+.photoslot img{width:100%;height:100%;object-fit:cover;display:block;border-radius:9px}
 .photoslot .ph{text-align:center;padding:22px;font-size:14.5px;line-height:1.7;color:rgba(251,248,238,.85)}
 .photoslot .ph svg{width:26px;height:26px;display:block;margin:0 auto 8px}
 .photoslot .swap{position:absolute;right:10px;bottom:10px;background:rgba(20,20,15,.6);
@@ -1231,15 +1233,22 @@ async function makePostcard(file){
     });
   }
   const px = 60, pw = PC_W - 120;
-  const iw = 820, ih = Math.round(iw*5/4), ix = Math.round((PC_W-iw)/2), iy = 60;
-  const base = iy + ih;
+  const iw = 780, ih = Math.round(iw*5/4), ix = Math.round((PC_W-iw)/2), iy = 60;
+  const mx = ix-22, my = iy-22, mw = iw+44, mh = ih+56;
+  const base = my + mh;
   const scale = Math.max(iw/bmp.width, ih/bmp.height);
   const dw = bmp.width*scale, dh = bmp.height*scale;
-  c.save(); rrect(c,ix,iy,iw,ih,28); c.clip();
+  c.save();
+  c.shadowColor = "rgba(20,20,15,.22)"; c.shadowBlur = 26; c.shadowOffsetY = 10;
+  c.fillStyle = "#FFFDF6"; rrect(c,mx,my,mw,mh,22); c.fill();
+  c.restore();
+  c.save(); rrect(c,ix,iy,iw,ih,14); c.clip();
   c.drawImage(bmp, ix + (iw-dw)/2, iy + (ih-dh)/2, dw, dh);
   c.restore();
-  c.strokeStyle = "rgba(20,20,15,.12)"; c.lineWidth = 2;
-  rrect(c,ix,iy,iw,ih,28); c.stroke();
+  c.strokeStyle = "rgba(20,20,15,.14)"; c.lineWidth = 2;
+  rrect(c,ix,iy,iw,ih,14); c.stroke();
+  c.strokeStyle = "rgba(20,20,15,.10)"; c.lineWidth = 1.5;
+  rrect(c,mx,my,mw,mh,22); c.stroke();
 
   if(CFG.img.pcbg){
     c.fillStyle = "rgba(247,244,236,.94)";
@@ -1324,7 +1333,7 @@ function vCard(){
     <span class="tag world">Take home · signature recipe</span>
     <div class="hero">
       ${art(w.art,160,"art")}${art("d-glass",140,"art2")}
-      <div class="photoslot" id="photoSlot">${S.photoURL
+      <div class="photoslot${S.photoURL ? " has" : ""}" id="photoSlot">${S.photoURL
         ? `<img src="${S.photoURL}" alt="รูปของคุณ"><span class="swap">เปลี่ยนรูป</span>`
         : `<div class="ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
              <path d="M3 8h3l2-2h8l2 2h3v11H3z"/><circle cx="12" cy="13" r="3.6"/></svg>
@@ -1380,6 +1389,7 @@ function vCard(){
     if(S.photoURL) URL.revokeObjectURL(S.photoURL);
     S.photoFile = f;
     S.photoURL = URL.createObjectURL(f);
+    slot.classList.add("has");
     slot.innerHTML = `<img src="${S.photoURL}" alt="รูปของคุณ"><span class="swap">เปลี่ยนรูป</span>`;
     slot.onclick = openPicker;
     shotBtn.lastChild.textContent = " เปลี่ยนรูปของคุณ ";
