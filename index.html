@@ -196,8 +196,8 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--world);outline-
 .photoslot{position:relative;z-index:3;margin:0 0 18px;border-radius:16px;overflow:hidden;
   aspect-ratio:4/5;display:grid;place-items:center;cursor:pointer;
   background:rgba(255,255,255,.10);border:1.5px dashed rgba(255,255,255,.45)}
-.photoslot.has{border:6px solid #FFFDF6;border-style:solid;background:#FFFDF6;
-  box-shadow:0 6px 18px rgba(20,20,15,.28)}
+.photoslot.has{border:8px solid #14140F;border-style:solid;background:#14140F;
+  box-shadow:0 6px 18px rgba(0,0,0,.35)}
 .photoslot img{width:100%;height:100%;object-fit:cover;display:block;border-radius:9px}
 .photoslot .ph{text-align:center;padding:22px;font-size:14.5px;line-height:1.7;color:rgba(251,248,238,.85)}
 .photoslot .ph svg{width:26px;height:26px;display:block;margin:0 auto 8px}
@@ -1240,14 +1240,14 @@ async function makePostcard(file){
   const dw = bmp.width*scale, dh = bmp.height*scale;
   c.save();
   c.shadowColor = "rgba(20,20,15,.22)"; c.shadowBlur = 26; c.shadowOffsetY = 10;
-  c.fillStyle = "#FFFDF6"; rrect(c,mx,my,mw,mh,22); c.fill();
+  c.fillStyle = "#14140F"; rrect(c,mx,my,mw,mh,22); c.fill();
   c.restore();
   c.save(); rrect(c,ix,iy,iw,ih,14); c.clip();
   c.drawImage(bmp, ix + (iw-dw)/2, iy + (ih-dh)/2, dw, dh);
   c.restore();
-  c.strokeStyle = "rgba(20,20,15,.14)"; c.lineWidth = 2;
+  c.strokeStyle = "rgba(255,255,255,.22)"; c.lineWidth = 2;
   rrect(c,ix,iy,iw,ih,14); c.stroke();
-  c.strokeStyle = "rgba(20,20,15,.10)"; c.lineWidth = 1.5;
+  c.strokeStyle = "rgba(20,20,15,.35)"; c.lineWidth = 1.5;
   rrect(c,mx,my,mw,mh,22); c.stroke();
 
   if(CFG.img.pcbg){
