@@ -196,7 +196,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--world);outline-
 .adminrow .close{background:var(--line);color:var(--ink)}
 .adminrow .reset{background:transparent;border:1.5px solid var(--line-2);color:var(--ink-2)}
 .adminnote{font-size:12.5px;color:var(--ink-3);margin-top:12px;line-height:1.7}
-.photoslot{position:relative;z-index:3;width:56%;margin:10px auto 26px;transform-origin:center;transition:transform .2s ease;border-radius:14px;overflow:hidden;
+.photoslot{position:relative;z-index:3;width:48%;margin:10px auto 26px;transform-origin:center;transition:transform .2s ease;border-radius:14px;overflow:hidden;
   aspect-ratio:4/5;display:grid;place-items:center;cursor:pointer;
   background:rgba(255,255,255,.10);border:1.5px dashed rgba(255,255,255,.4)}
 .photoslot.has{border:0;background:transparent;box-shadow:0 6px 16px rgba(0,0,0,.32)}
@@ -443,7 +443,7 @@ const DEFAULTS = {
   img: {logo:"", cover:"", includes:"", pcbg:"", NT:"", NF:"", SJ:"", SP:"",
         char_NT:"", char_NF:"", char_SJ:"", char_SP:""},
   photoTilt: 0,
-  photo: {w:60, x:0, y:0, frame:true},
+  photo: {w:52, x:0, y:0, ty:0, frame:true},
   worldsText: {
     NT: WORLDS.NT.base.join("\n"), NF: WORLDS.NF.base.join("\n"),
     SJ: WORLDS.SJ.base.join("\n"), SP: WORLDS.SP.base.join("\n")
@@ -531,7 +531,7 @@ function applyCFG(){
   if(!CFG.img) CFG.img = JSON.parse(JSON.stringify(DEFAULTS.img));
   if(!CFG.worldsText) CFG.worldsText = {};
   Object.keys(TYPES).forEach(t => { if(!(("type_"+t) in CFG.img)) CFG.img["type_"+t] = ""; });
-  CFG.photo = Object.assign({w:60, x:0, y:0, frame:true}, CFG.photo || {});
+  CFG.photo = Object.assign({w:52, x:0, y:0, ty:0, frame:true}, CFG.photo || {});
   ["NT","NF","SJ","SP"].forEach(k => {
     const txt = (CFG.worldsText && CFG.worldsText[k]) || lines(CFG.worlds[k] || []);
     const pw = parseWorld(txt);
@@ -632,15 +632,18 @@ function adminForm(){
     <div class="imgrow"><div style="flex:1;font-size:14px">องศาเอียง (-6 ถึง 6)</div>
       <input id="adTilt" type="number" step="0.5" min="-6" max="6" style="width:110px"
         value="${Number(CFG.photoTilt)||0}"></div>
-    <div class="imgrow"><div style="flex:1;font-size:14px">ขนาด (% ของความกว้าง)</div>
-      <input id="adPW" type="number" step="1" min="30" max="92" style="width:110px"
-        value="${Number(CFG.photo.w)||60}"></div>
+    <div class="imgrow"><div style="flex:1;font-size:14px">ขนาดรูป (28-64% ของความกว้าง)</div>
+      <input id="adPW" type="number" step="1" min="28" max="64" style="width:110px"
+        value="${Number(CFG.photo.w)||52}"></div>
     <div class="imgrow"><div style="flex:1;font-size:14px">เลื่อนซ้าย-ขวา (px)</div>
       <input id="adPX" type="number" step="5" min="-260" max="260" style="width:110px"
         value="${Number(CFG.photo.x)||0}"></div>
     <div class="imgrow"><div style="flex:1;font-size:14px">เลื่อนขึ้น-ลง (px)</div>
       <input id="adPY" type="number" step="5" min="-60" max="360" style="width:110px"
         value="${Number(CFG.photo.y)||0}"></div>
+    <div class="imgrow"><div style="flex:1;font-size:14px">เลื่อนบล็อกข้อความ ขึ้น/ลง (-140 ถึง 140)</div>
+      <input id="adPT" type="number" step="10" min="-140" max="140" style="width:110px"
+        value="${Number(CFG.photo.ty)||0}"></div>
     <div class="imgrow"><div style="flex:1;font-size:14px">ใส่กรอบดำรอบรูป</div>
       <input id="adPF" type="checkbox" style="width:22px;height:22px" ${CFG.photo.frame?"checked":""}></div>
     <p class="adminnote" style="margin-top:6px">ถ้าพื้นหลังโปสการ์ดมีกรอบอยู่แล้ว ให้ติ๊กออก แล้วปรับขนาดกับตำแหน่งให้รูปลงพอดีในกรอบของภาพพื้นหลัง</p>
@@ -705,9 +708,10 @@ function adminForm(){
     CFG.ig = g("adIG").trim() || DEFAULTS.ig;
     CFG.photoTilt = Math.max(-6, Math.min(6, parseFloat(g("adTilt")) || 0));
     CFG.photo = {
-      w: Math.max(30, Math.min(92, parseFloat(g("adPW")) || 60)),
+      w: Math.max(28, Math.min(64, parseFloat(g("adPW")) || 52)),
       x: Math.max(-260, Math.min(260, parseFloat(g("adPX")) || 0)),
       y: Math.max(-60, Math.min(360, parseFloat(g("adPY")) || 0)),
+      ty: Math.max(-140, Math.min(140, parseFloat(g("adPT")) || 0)),
       frame: document.getElementById("adPF").checked
     };
     CFG.pin = g("adNewPin").trim() || DEFAULTS.pin;
@@ -1288,14 +1292,17 @@ async function makePostcard(file){
     });
   }
   const px = 60, pw = PC_W - 120;
-  const P = CFG.photo || {w:60, x:0, y:0, frame:true};
-  const iw = Math.round(PC_W * (Number(P.w)||60) / 100);
+  const P = CFG.photo || {w:52, x:0, y:0, frame:true};
+  const iw = Math.round(PC_W * (Number(P.w)||52) / 100);
   const ih = Math.round(iw*5/4);
   const ix = Math.round((PC_W-iw)/2) + (Number(P.x)||0);
   const iy = 78 + (Number(P.y)||0);
   const pad = P.frame ? 22 : 0, padB = P.frame ? 34 : 0;
   const mx = ix-pad, my = iy-pad, mw = iw+pad*2, mh = ih+pad+padB;
   const base = my + mh + (P.frame ? 0 : 24);
+  /* บล็อกข้อความมีตำแหน่งของตัวเอง ไม่ขยับตามขนาดรูป */
+  const TEXT_TOP = 940;
+  const TB = Math.max(TEXT_TOP + (Number(P.ty) || 0), base + 20);
   const scale = Math.max(iw/bmp.width, ih/bmp.height);
   const dw = bmp.width*scale, dh = bmp.height*scale;
   const tilt = (Number(CFG.photoTilt) || 0) * Math.PI/180;
@@ -1319,7 +1326,7 @@ async function makePostcard(file){
 
   if(CFG.img.pcbg){
     c.fillStyle = "rgba(247,244,236,.94)";
-    rrect(c, 34, base+16, PC_W-68, (PC_H-146)-(base+16), 26); c.fill();
+    rrect(c, 0, TB+10, PC_W, (PC_H-146)-(TB+10), 0); c.fill();
   }
   const tp = TYPES[S.type] || {n:"",t:[],d:"",s:""};
   const tw = pw - 230;
@@ -1331,31 +1338,31 @@ async function makePostcard(file){
     if(CFG.img["type_"+S.type] || CFG.img["char_"+w.code]){
       const bw = 170, bh = 200, sc = Math.max(bw/ch.width, bh/ch.height);
       const dw = ch.width*sc, dh = ch.height*sc;
-      c.save(); rrect(c, PC_W-px-bw, base+130, bw, bh, 16); c.clip();
-      c.drawImage(ch, PC_W-px-bw + (bw-dw)/2, base+130 + (bh-dh)/2, dw, dh);
+      c.save(); rrect(c, PC_W-px-bw, TB+130, bw, bh, 16); c.clip();
+      c.drawImage(ch, PC_W-px-bw + (bw-dw)/2, TB+130 + (bh-dh)/2, dw, dh);
       c.restore();
     } else {
-      c.drawImage(ch, PC_W-px-160, base+130, 160, 240);
+      c.drawImage(ch, PC_W-px-160, TB+130, 160, 240);
     }
   }catch(e){}
   c.textAlign = "left"; c.fillStyle = "#96917F";
   c.font = "500 26px Anuphan, sans-serif";
-  c.fillText(`${S.serial} · ${new Date().toLocaleDateString("th-TH",{day:"numeric",month:"long",year:"numeric"})}`, px, base+52);
+  c.fillText(`${S.serial} · ${new Date().toLocaleDateString("th-TH",{day:"numeric",month:"long",year:"numeric"})}`, px, TB+52);
 
   const nameSize = fit(c, S.scent, pw, 66, "700");
   c.fillStyle = "#14140F"; c.font = `700 ${nameSize}px Anuphan, sans-serif`;
-  c.fillText(S.scent, px, base+120);
+  c.fillText(S.scent, px, TB+120);
 
   c.fillStyle = "#5F5C50"; c.font = "500 29px Anuphan, sans-serif";
-  c.fillText(fitTxt(c,`โดย ${S.name} · ${S.type} ${tp.n} · ${w.code} — ${w.title}`,tw), px, base+164);
+  c.fillText(fitTxt(c,`โดย ${S.name} · ${S.type} ${tp.n} · ${w.code} — ${w.title}`,tw), px, TB+164);
 
   c.fillStyle = w.color; c.font = "600 27px Anuphan, sans-serif";
-  c.fillText(fitTxt(c,`${(tp.t||[]).join(" · ")} · ${w.mood}`,tw), px, base+204);
+  c.fillText(fitTxt(c,`${(tp.t||[]).join(" · ")} · ${w.mood}`,tw), px, TB+204);
 
   c.fillStyle = "#5F5C50"; c.font = "500 26px Anuphan, sans-serif";
-  wrapLines(c, tp.d, tw, 3).forEach((ln,i) => c.fillText(ln, px, base+244 + i*36));
+  wrapLines(c, tp.d, tw, 3).forEach((ln,i) => c.fillText(ln, px, TB+244 + i*36));
   c.fillStyle = "#96917F"; c.font = "italic 500 25px Anuphan, sans-serif";
-  wrapLines(c, "ตอนเลือกกลิ่น: " + tp.s, tw, 2).forEach((ln,i) => c.fillText(ln, px, base+322 + i*34));
+  wrapLines(c, "ตอนเลือกกลิ่น: " + tp.s, tw, 2).forEach((ln,i) => c.fillText(ln, px, TB+322 + i*34));
 
   const rows = [
     ["กลิ่นฐาน", S.picks.join(" · ")],
@@ -1365,7 +1372,7 @@ async function makePostcard(file){
     ["ท็อปปิ้ง", S.top],
     ["เกมทายกลิ่น", `${S.smellScore} / ${SMELL.length}`]
   ];
-  let y = base+400;
+  let y = TB+400;
   rows.forEach(([k,v]) => {
     c.strokeStyle = "#E6E0D0"; c.lineWidth = 1.5;
     c.beginPath(); c.moveTo(px,y); c.lineTo(PC_W-px,y); c.stroke();
