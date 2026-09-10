@@ -16,6 +16,10 @@
 <meta name="twitter:image" content="cover.jpg">
 <meta name="theme-color" content="#F7F4EC">
 <meta name="apple-mobile-web-app-title" content="Brew Your Type">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="apple-touch-icon" sizes="180x180" href="icon.png">
 <link rel="icon" href="icon.png">
 <link rel="apple-touch-icon" href="icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -62,19 +66,42 @@ header{position:sticky;top:0;z-index:9;background:rgba(247,244,236,.93);
 .progress i{display:block;height:4px;background:var(--world);width:0;
   transition:width .45s cubic-bezier(.2,.7,.2,1),background .3s}
 
-.band{position:relative;overflow:hidden;margin:18px -18px 0;padding:24px 18px 26px;
-  background:var(--world-t);color:var(--ink)}
-.band::after{content:"";position:absolute;right:-40px;top:-40px;width:180px;height:180px;
-  border-radius:50%;background:#fff;opacity:.45;filter:blur(24px)}
+.hero21{position:relative;margin:14px 0 0;height:min(62vh,470px);overflow:hidden;
+  border-radius:22px;background:var(--world-d);isolation:isolate}
+.hero21 .bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.hero21 .grad{position:absolute;inset:0;
+  background:linear-gradient(to bottom, rgba(20,20,15,.30), rgba(20,20,15,0) 42%, rgba(20,20,15,.72))}
+.hero21 .cap{position:absolute;left:0;right:0;bottom:0;padding:0 18px 18px;z-index:3}
+.hero21 .huge{font-size:clamp(46px,17vw,104px);line-height:.86;letter-spacing:-.06em;
+  font-weight:700;color:#E1E0CC;margin:0}
+.hero21 .sub21{margin:10px 0 0;font-size:14px;line-height:1.45;color:rgba(225,224,204,.82);max-width:30ch}
+.hero21 .pill{position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:4;
+  background:rgba(20,20,15,.92);color:rgba(225,224,204,.85);font-size:11.5px;letter-spacing:.12em;
+  text-transform:uppercase;padding:7px 16px;border-radius:0 0 16px 16px}
+@keyframes pullUp{from{transform:translateY(22px);opacity:0}to{transform:translateY(0);opacity:1}}
+.pw{display:inline-block;animation:pullUp .6s cubic-bezier(.16,1,.3,1) both}
+.noise{position:absolute;inset:0;z-index:1;pointer-events:none;opacity:.45;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/></filter><rect width='120' height='120' filter='url(%23n)' opacity='.55'/></svg>")}
+.bar button{position:relative}
+.bar button .arw{position:absolute;right:10px;top:50%;transform:translateY(-50%);
+  width:38px;height:38px;border-radius:38px;background:rgba(255,255,255,.16);
+  display:grid;place-items:center;transition:transform .18s ease}
+.bar button:active .arw{transform:translateY(-50%) scale(1.08)}
+.bar button .arw svg{width:17px;height:17px;stroke:#FBF8EE;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.band{position:relative;overflow:hidden;margin:16px 0 0;padding:26px 20px 28px;
+  border-radius:22px;background:var(--world-d);color:#E1E0CC;isolation:isolate}
+.band::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(to bottom, rgba(255,255,255,.10), rgba(20,20,15,0) 45%, rgba(20,20,15,.45))}
 .band .in{position:relative;z-index:2}
-.band .kicker{font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--world)}
-.band h1{color:var(--ink);margin:8px 0 4px}
-.band h2{color:var(--ink);margin:8px 0 4px}
-.band p{margin:6px 0 0;font-size:14.5px;color:var(--ink-2);max-width:32ch}
+.band .kicker{font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:rgba(225,224,204,.7)}
+.band h1{color:#E1E0CC;margin:10px 0 4px;font-size:clamp(38px,12vw,74px);line-height:.9;letter-spacing:-.05em}
+.band h2{color:#E1E0CC;margin:10px 0 4px;font-size:clamp(26px,7.4vw,40px);line-height:1.05;letter-spacing:-.035em}
+.band p{margin:8px 0 0;font-size:14.5px;color:rgba(225,224,204,.8);max-width:32ch}
+.band .in{position:relative;z-index:2}
 .band .art{position:absolute;z-index:1;opacity:.5;right:-16px;bottom:-22px}
-.band .stamp{position:absolute;z-index:3;top:16px;right:16px;border:1.5px solid var(--world);
+.band .stamp{position:absolute;z-index:3;top:16px;right:16px;border:1.5px solid rgba(225,224,204,.55);
   border-radius:999px;padding:5px 12px;font-size:11.5px;transform:rotate(6deg);
-  color:var(--world);background:rgba(255,255,255,.6)}
+  color:#E1E0CC;background:rgba(20,20,15,.35)}
 
 .tag{display:inline-flex;align-items:center;gap:7px;background:var(--wash-y);color:var(--ink);
   font-size:12px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;
@@ -159,7 +186,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--world);outline-
 .slot.rolling{color:var(--ink-3);filter:blur(.5px)}
 @media (prefers-reduced-motion:reduce){.slot.rolling{filter:none}.progress i{transition:none}}
 .link{display:block;width:100%;margin-top:12px;padding:13px;border:1.5px solid var(--line-2);
-  border-radius:12px;background:var(--surface);color:var(--ink);font-family:inherit;
+  border-radius:999px;background:var(--surface);color:var(--ink);font-family:inherit;
   font-size:15px;font-weight:600;cursor:pointer}
 .hero{position:relative;overflow:hidden;background:var(--world-d);color:#FBF8EE;
   border-radius:24px;padding:26px 22px;margin-top:16px}
@@ -234,7 +261,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--world);outline-
   backdrop-filter:blur(12px);border-top:1.5px solid var(--line);
   padding:13px 18px calc(13px + env(safe-area-inset-bottom))}
 .bar .inner{max-width:520px;margin:0 auto}
-.bar button{width:100%;padding:17px;border:0;border-radius:14px;background:var(--world);
+.bar button{width:100%;padding:17px;border:0;border-radius:999px;background:var(--world);
   color:#FBF8EE;font-family:inherit;font-size:17px;font-weight:600;cursor:pointer;
   transition:transform .12s,background .2s;box-shadow:0 4px 0 rgba(25,26,18,.16)}
 .bar button:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(25,26,18,.16)}
@@ -302,7 +329,7 @@ footer{margin-top:30px;padding-top:16px;border-top:1px dashed var(--line-2);
   <footer>
     บริษัท ไชยจันลา จำกัด · RANGSAN Academy · SAO Café · RANGSAN Coffee<br>
     จองรอบถัดไป LINE @saocafe · IG saocafe_official<br>
-    <span style="opacity:.55">v17 · 10 ก.ย. 2569</span>
+    <span style="opacity:.55">v23 · 10 ก.ย. 2569</span>
   </footer>
 </div>
 <div class="admin" id="admin"><div class="adminbox" id="adminBox"></div></div>
@@ -507,7 +534,7 @@ function fileToDataURL(file, maxW){
 }
 let CFG = JSON.parse(JSON.stringify(DEFAULTS));
 const CFG_KEY = "byt-config-v1";
-const APP_VER = "v17 · 10 ก.ย. 2569";
+const APP_VER = "v23 · 10 ก.ย. 2569";
 async function loadCFG(){
   let remote = null, local = null;
   try{
@@ -523,8 +550,22 @@ async function loadCFG(){
     const el = document.getElementById("baked-config");
     if(el) baked = JSON.parse(el.textContent);
   }catch(e){}
-  CFG = Object.assign(JSON.parse(JSON.stringify(DEFAULTS)), baked || {}, remote || {}, local || {});
-  CFG.img = Object.assign({}, DEFAULTS.img, (baked && baked.img) || {}, (remote && remote.img) || {}, (local && local.img) || {});
+  const merge = (...srcs) => {
+    const out = {};
+    srcs.forEach(s => {
+      if(!s) return;
+      Object.keys(s).forEach(k => {
+        const v = s[k];
+        if(v === "" || v === null || v === undefined) return;   /* ค่าว่างไม่ทับของเดิม */
+        if(Array.isArray(v) && !v.length) return;
+        out[k] = v;
+      });
+    });
+    return out;
+  };
+  CFG = Object.assign(JSON.parse(JSON.stringify(DEFAULTS)), merge(baked, remote, local));
+  CFG.img = Object.assign({}, DEFAULTS.img,
+    merge((baked && baked.img), (remote && remote.img), (local && local.img)));
   CFG.worldsText = Object.assign({}, (baked && baked.worldsText) || {}, (remote && remote.worldsText) || {}, (local && local.worldsText) || {});
   CFG.hasRemote = !!(remote || baked);
   CFG.hasLocal = !!local;
@@ -780,12 +821,25 @@ function paint(w){
 function bar(label, fn, disabled){
   if(!label){ barEl.classList.add("hidden"); return; }
   barEl.classList.remove("hidden");
-  cta.textContent = label; cta.disabled = !!disabled; cta.onclick = fn;
+  cta.innerHTML = `<span style="display:inline-block;padding-right:34px">${esc(label)}</span>
+    <span class="arw"><svg viewBox="0 0 24 24"><path d="M5 12h13M13 6l6 6-6 6"/></svg></span>`;
+  cta.disabled = !!disabled; cta.onclick = fn;
 }
 function go(name){ S.screen = SCREENS.indexOf(name); render(); window.scrollTo(0,0); }
 function optRow(v,pressed){
   return `<button class="opt" aria-pressed="${pressed?"true":"false"}" data-v="${esc(v)}">
     ${icon(v)}<span class="txt">${esc(v)}</span></button>`;
+}
+function pullUpWords(root){
+  root.querySelectorAll("h1, h2, .big").forEach(el => {
+    if(el.dataset.pw || el.querySelector("img,svg")) return;
+    el.dataset.pw = "1";
+    let i = 0;
+    el.innerHTML = el.innerHTML.split("<br>").map(line =>
+      line.split(" ").map(w =>
+        `<span class="pw" style="animation-delay:${(i++)*70}ms">${w}</span>`).join(" ")
+    ).join("<br>");
+  });
 }
 function render(){
   document.getElementById("fill").style.width = (S.screen/(SCREENS.length-1)*100)+"%";
@@ -793,14 +847,24 @@ function render(){
     S.screen===0 ? "start" : "<b>"+pad(S.screen)+"</b>of "+pad(SCREENS.length-1);
   ({start:vStart,quiz:vQuiz,world:vWorld,build:vBuild,roulette:vRoulette,
     name:vName,smell:vSmell,tea:vTea,card:vCard})[SCREENS[S.screen]]();
+  pullUpWords(app);
 }
 
 function vStart(){
   paint(null);
   app.innerHTML = `
     ${CFG.img.cover
-      ? `<img class="coverfull" src="${CFG.img.cover}" alt="Brew Your Type">`
+      ? `<div class="hero21">
+          <img class="bg" src="${CFG.img.cover}" alt="">
+          <div class="noise"></div><div class="grad"></div>
+          <span class="pill">Scent &amp; Thai Tea Lab</span>
+          <div class="cap">
+            <h1 class="huge">Brew your type</h1>
+            <p class="sub21">16 บุคลิกภาพ · 1 กลิ่นเฉพาะตัว · 1 แก้วในแบบของคุณ</p>
+          </div>
+        </div>`
       : `<div class="band">
+      <div class="noise"></div>
           <span class="stamp">90 min · 6 seats</span>
           ${art("d-jar",150,"art","right:-18px;bottom:-30px")}
           <div class="in">
@@ -834,9 +898,11 @@ function vStart(){
 function vQuiz(){
   const q = Q[S.qi];
   app.innerHTML = `
-    <span class="tag">What's your type · ${pad(S.qi+1)} / ${pad(Q.length)}</span>
-    <h2>${esc(q.t)}</h2>
-    <p class="lead">ตอบตามที่เป็นจริง ไม่ต้องคิดนาน</p>
+    <div class="band"><div class="noise"></div><div class="in">
+      <div class="kicker">What's your type · ${pad(S.qi+1)} / ${pad(Q.length)}</div>
+      <h2>${esc(q.t)}</h2>
+      <p>ตอบตามที่เป็นจริง ไม่ต้องคิดนาน</p>
+    </div></div>
     ${q.o.map((o,i)=>`<button class="opt" data-i="${i}"><span class="txt">${esc(o[2])}</span><span class="tick"></span></button>`).join("")}
     ${S.qi>0?'<button class="link" id="back">ย้อนกลับ</button>':""}
     <div class="divider">ตอบครบ ${Q.length} ข้อแล้วรู้กลุ่มกลิ่นทันที</div>`;
@@ -973,6 +1039,7 @@ function vWorld(){
   const w = worldOf(S.type); paint(w);
   app.innerHTML = `
     <div class="band">
+      <div class="noise"></div>
       <span class="stamp">One scent, your world</span>
       ${CFG.img[w.code] ? `<img class="bandimg" src="${CFG.img[w.code]}" alt="">`
                         : art(w.art,170,"art","right:-26px;bottom:-40px")}
@@ -1020,9 +1087,11 @@ function vWorld(){
 function vBuild(){
   const w = worldOf(S.type); paint(w);
   app.innerHTML = `
-    <span class="tag world">Build your scent</span>
-    <h2>เลือกวัตถุดิบของคุณ</h2>
-    <p class="lead">หยิบกลิ่นฐาน 2 อย่างจากโลก ${esc(w.title)} แล้วเติมกลิ่นที่ชอบเองอีก 1 อย่าง</p>
+    <div class="band"><div class="noise"></div><div class="in">
+      <div class="kicker">Build your scent</div>
+      <h2>เลือกวัตถุดิบของคุณ</h2>
+      <p>หยิบกลิ่นฐาน 2 อย่างจากโลก ${esc(w.title)} แล้วเติมกลิ่นที่ชอบเองอีก 1 อย่าง</p>
+    </div></div>
     <span class="tag plain">กลิ่นฐาน — เลือก 2</span>
     <div id="base">${(w.groups && w.groups.length ? w.groups : [{name:"",items:w.base}]).map(gp => `
       ${gp.name ? `<div style="display:flex;align-items:center;gap:9px;margin:14px 0 2px">
@@ -1121,9 +1190,11 @@ function spinWheel(items, done){
 
 function vRoulette(){
   app.innerHTML = `
-    <span class="tag world">Modifier roulette</span>
-    <h2>วงล้อกลิ่นบังคับ</h2>
-    <p class="lead">หมุนได้กลิ่นไหน ให้เติมเพิ่มอีก 1 หยิบมือ ถ้าไม่ถูกใจ ขอหมุนใหม่ได้ 1 ครั้ง</p>
+    <div class="band"><div class="noise"></div><div class="in">
+      <div class="kicker">Modifier roulette</div>
+      <h2>วงล้อกลิ่นบังคับ</h2>
+      <p>หมุนได้กลิ่นไหน ให้เติมเพิ่มอีก 1 หยิบมือ ถ้าไม่ถูกใจ ขอหมุนใหม่ได้ 1 ครั้ง</p>
+    </div></div>
     ${wheelHTML(POOL)}
     <button class="link" id="spin">${S.forced ? (S.rerolled ? "หมุนครบแล้ว" : "หมุนใหม่อีกครั้ง") : "หมุนวงล้อ"}</button>
     <div class="divider">ลุ้นกันทั้งโต๊ะ</div>
@@ -1148,9 +1219,11 @@ function vRoulette(){
 function vName(){
   const w = worldOf(S.type);
   app.innerHTML = `
-    <span class="tag world">Name your scent</span>
-    <h2>ตั้งชื่อกลิ่นของคุณ</h2>
-    <p class="lead">ชื่อนี้จะไปอยู่บนฉลากหลอดยาดม และส่งเข้าโหวตชื่อที่ดีที่สุดของรอบนี้</p>
+    <div class="band"><div class="noise"></div><div class="in">
+      <div class="kicker">Name your scent</div>
+      <h2>ตั้งชื่อกลิ่นของคุณ</h2>
+      <p>ชื่อนี้จะไปอยู่บนฉลากหลอดยาดม และส่งเข้าโหวตชื่อที่ดีที่สุดของรอบนี้</p>
+    </div></div>
     <input id="sc" type="text" placeholder="เช่น ${esc(w.names[0])}" value="${esc(S.scent)}" autocomplete="off" aria-label="ชื่อกลิ่นของคุณ">
     <span class="tag plain">หรือกดใช้ชื่อที่แนะนำ</span>
     <div>${w.names.map(n=>`<button class="chip" data-n="${esc(n)}">${esc(n)}</button>`).join("")}</div>
@@ -1173,9 +1246,11 @@ function vName(){
 function vSmell(){
   const q = SMELL[S.smellI];
   app.innerHTML = `
-    <span class="tag">Blind smell test · ${pad(S.smellI+1)} / ${pad(SMELL.length)}</span>
-    <h2>ขวดหมายเลข ${q.n} คือกลิ่นอะไร</h2>
-    <p class="lead">ดมขวดบนโต๊ะแล้วเลือกคำตอบ ตอบแล้วเฉลยทันที</p>
+    <div class="band"><div class="noise"></div><div class="in">
+      <div class="kicker">Blind smell test · ${pad(S.smellI+1)} / ${pad(SMELL.length)}</div>
+      <h2>ขวดหมายเลข ${q.n} คือกลิ่นอะไร</h2>
+      <p>ดมขวดบนโต๊ะแล้วเลือกคำตอบ ตอบแล้วเฉลยทันที</p>
+    </div></div>
     ${q.opts.map(o=>`<button class="opt" data-o="${esc(o)}">${icon(o)}<span class="txt">${esc(o)}</span><span class="tick"></span></button>`).join("")}
     <div class="divider">ทายถูก 4 ข้อขึ้นไป มีรางวัล</div>`;
   bar(null);
@@ -1197,6 +1272,7 @@ function showScore(){
             : "ไม่เป็นไร สมุนไพรแห้งหลอกจมูกเก่ง";
   app.innerHTML = `
     <div class="band">
+      <div class="noise"></div>
       ${art("d-lav",150,"art","right:-20px;bottom:-34px")}
       <div class="in">
         <div class="kicker">ผลเกมทายกลิ่น</div>
@@ -1217,6 +1293,7 @@ function showScore(){
 function vTea(){
   app.innerHTML = `
     <div class="band">
+      <div class="noise"></div>
       ${art("d-glass",150,"art","right:-14px;bottom:-32px")}
       <div class="in">
         <div class="kicker">Brew your blend</div>
@@ -1529,6 +1606,27 @@ function vCard(){
   });
 }
 
+(function(){
+  try{
+    const icon = new URL("icon.png", location.href).href;
+    const m = {
+      name: "Brew Your Type · SAO Café",
+      short_name: "Brew Your Type",
+      start_url: location.pathname + location.search,
+      display: "standalone",
+      background_color: "#F7F4EC",
+      theme_color: "#F7F4EC",
+      icons: [
+        {src: icon, sizes: "192x192", type: "image/png", purpose: "any"},
+        {src: icon, sizes: "512x512", type: "image/png", purpose: "any"}
+      ]
+    };
+    const url = URL.createObjectURL(new Blob([JSON.stringify(m)], {type:"application/manifest+json"}));
+    const l = document.createElement("link");
+    l.rel = "manifest"; l.href = url;
+    document.head.appendChild(l);
+  }catch(e){}
+})();
 bindAdminTap();
 render();
 loadCFG();
