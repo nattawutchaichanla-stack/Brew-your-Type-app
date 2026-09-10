@@ -196,8 +196,8 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--world);outline-
 .photoslot{position:relative;z-index:3;margin:0 0 18px;border-radius:16px;overflow:hidden;
   aspect-ratio:4/5;display:grid;place-items:center;cursor:pointer;
   background:rgba(255,255,255,.10);border:1.5px dashed rgba(255,255,255,.45)}
-.photoslot.has{border:8px solid #14140F;border-style:solid;background:#14140F;
-  box-shadow:0 6px 18px rgba(0,0,0,.35)}
+.photoslot.has{border:6px solid #14140F;border-style:solid;background:#14140F;
+  box-shadow:0 6px 18px rgba(0,0,0,.35);width:82%;margin:0 auto 18px}
 .photoslot img{width:100%;height:100%;object-fit:cover;display:block;border-radius:9px}
 .photoslot .ph{text-align:center;padding:22px;font-size:14.5px;line-height:1.7;color:rgba(251,248,238,.85)}
 .photoslot .ph svg{width:26px;height:26px;display:block;margin:0 auto 8px}
@@ -438,6 +438,7 @@ const DEFAULTS = {
   ig: "saocafe_official",
   line: "@saocafe",
   img: {logo:"", cover:"", includes:"", pcbg:"", NT:"", NF:"", SJ:"", SP:""},
+  photoTilt: 0,
   worldsText: {
     NT: WORLDS.NT.base.join("\n"), NF: WORLDS.NF.base.join("\n"),
     SJ: WORLDS.SJ.base.join("\n"), SP: WORLDS.SP.base.join("\n")
@@ -607,6 +608,8 @@ function adminForm(){
         </div>`).join("")}`
       : `<p class="adminnote" style="margin-top:10px">ยังไม่มีกลุ่มย่อย — พิมพ์ <b>ชื่อกลุ่มย่อย: ของ1, ของ2</b> ในช่องบ้านด้านบน แล้วกดบันทึก ช่องใส่รูปของกลุ่มย่อยจะขึ้นตรงนี้</p>`}
     <input type="file" id="adImgFile" accept="image/*" style="display:none">
+    <label>องศาเอียงของรูปในกรอบ (-6 ถึง 6 · 0 = ตรง)</label>
+    <input id="adTilt" type="number" step="0.5" min="-6" max="6" value="${Number(CFG.photoTilt)||0}">
     <label>เปลี่ยนรหัสผ่าน</label><input id="adNewPin" value="${esc(CFG.pin)}">
     <div class="adminrow">
       <button class="save" id="adSave">บันทึก</button>
@@ -660,6 +663,7 @@ function adminForm(){
     CFG.teabase = parseLines(g("adTea"));
     CFG.line = g("adLine").trim() || DEFAULTS.line;
     CFG.ig = g("adIG").trim() || DEFAULTS.ig;
+    CFG.photoTilt = Math.max(-6, Math.min(6, parseFloat(g("adTilt")) || 0));
     CFG.pin = g("adNewPin").trim() || DEFAULTS.pin;
     const ok = saveCFG(); applyCFG();
     const note = box.querySelector(".adminnote");
@@ -1233,11 +1237,15 @@ async function makePostcard(file){
     });
   }
   const px = 60, pw = PC_W - 120;
-  const iw = 780, ih = Math.round(iw*5/4), ix = Math.round((PC_W-iw)/2), iy = 60;
+  const iw = 680, ih = Math.round(iw*5/4), ix = Math.round((PC_W-iw)/2), iy = 78;
   const mx = ix-22, my = iy-22, mw = iw+44, mh = ih+56;
   const base = my + mh;
   const scale = Math.max(iw/bmp.width, ih/bmp.height);
   const dw = bmp.width*scale, dh = bmp.height*scale;
+  const tilt = (Number(CFG.photoTilt) || 0) * Math.PI/180;
+  const cxm = mx + mw/2, cym = my + mh/2;
+  c.save();
+  if(tilt){ c.translate(cxm, cym); c.rotate(tilt); c.translate(-cxm, -cym); }
   c.save();
   c.shadowColor = "rgba(20,20,15,.22)"; c.shadowBlur = 26; c.shadowOffsetY = 10;
   c.fillStyle = "#14140F"; rrect(c,mx,my,mw,mh,22); c.fill();
@@ -1245,10 +1253,9 @@ async function makePostcard(file){
   c.save(); rrect(c,ix,iy,iw,ih,14); c.clip();
   c.drawImage(bmp, ix + (iw-dw)/2, iy + (ih-dh)/2, dw, dh);
   c.restore();
-  c.strokeStyle = "rgba(255,255,255,.22)"; c.lineWidth = 2;
-  rrect(c,ix,iy,iw,ih,14); c.stroke();
   c.strokeStyle = "rgba(20,20,15,.35)"; c.lineWidth = 1.5;
   rrect(c,mx,my,mw,mh,22); c.stroke();
+  c.restore();
 
   if(CFG.img.pcbg){
     c.fillStyle = "rgba(247,244,236,.94)";
@@ -1374,6 +1381,8 @@ function vCard(){
   const shotInput = document.getElementById("shotInput");
   const shotBtn = document.getElementById("shotBtn");
   const slot = document.getElementById("photoSlot");
+  const tilt = Number(CFG.photoTilt) || 0;
+  if(tilt) slot.style.transform = `rotate(${tilt}deg)`;
   const pcBtn = document.getElementById("pcBtn");
   const pcwrap = document.getElementById("pcwrap");
   const pcimg = document.getElementById("pcimg");
@@ -1390,6 +1399,7 @@ function vCard(){
     S.photoFile = f;
     S.photoURL = URL.createObjectURL(f);
     slot.classList.add("has");
+    if(tilt) slot.style.transform = `rotate(${tilt}deg)`;
     slot.innerHTML = `<img src="${S.photoURL}" alt="รูปของคุณ"><span class="swap">เปลี่ยนรูป</span>`;
     slot.onclick = openPicker;
     shotBtn.lastChild.textContent = " เปลี่ยนรูปของคุณ ";
