@@ -484,12 +484,36 @@ function fileToDataURL(file, maxW){
 }
 let CFG = JSON.parse(JSON.stringify(DEFAULTS));
 const CFG_KEY = "byt-config-v1";
-function loadCFG(){
+async function loadCFG(){
+  let remote = null, local = null;
+  try{
+    const r = await fetch("config.json?v=" + Date.now(), {cache:"no-store"});
+    if(r.ok) remote = await r.json();
+  }catch(e){}
   try{
     const raw = localStorage.getItem(CFG_KEY);
-    if(raw) CFG = Object.assign(JSON.parse(JSON.stringify(DEFAULTS)), JSON.parse(raw));
+    if(raw) local = JSON.parse(raw);
   }catch(e){}
+  CFG = Object.assign(JSON.parse(JSON.stringify(DEFAULTS)), remote || {}, local || {});
+  CFG.img = Object.assign({}, DEFAULTS.img, (remote && remote.img) || {}, (local && local.img) || {});
+  if(remote && remote.worldsText) CFG.worldsText = Object.assign({}, remote.worldsText, (local && local.worldsText) || {});
+  CFG.hasRemote = !!remote;
+  CFG.hasLocal = !!local;
   applyCFG();
+  render();
+}
+function exportCFG(){
+  const out = JSON.parse(JSON.stringify(CFG));
+  delete out.hasRemote; delete out.hasLocal;
+  const blob = new Blob([JSON.stringify(out, null, 2)], {type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "config.json";
+  a.click();
+}
+function clearLocal(){
+  try{ localStorage.removeItem(CFG_KEY); }catch(e){}
+  location.reload();
 }
 function saveCFG(){
   try{ localStorage.setItem(CFG_KEY, JSON.stringify(CFG)); return true; }catch(e){ return false; }
@@ -586,7 +610,15 @@ function adminForm(){
       <button class="save" id="adSave">บันทึก</button>
       <button class="close" id="adClose2">ปิด</button>
     </div>
+    <div class="adminrow">
+      <button class="save" id="adExport">ส่งออกไฟล์ config.json</button>
+      <button class="reset" id="adClear">ใช้ค่ากลางของเว็บ</button>
+    </div>
     <div class="adminrow"><button class="reset" id="adReset">คืนค่าเริ่มต้นทั้งหมด</button></div>
+    <p class="adminnote">อยากให้ทุกเครื่องเห็นเหมือนกัน — ตั้งค่าจนพอใจในเครื่องนี้ กด <b>ส่งออกไฟล์ config.json</b>
+      แล้วอัปไฟล์นั้นขึ้น GitHub ไว้ข้าง ๆ index.html ทุกเครื่องที่เปิดลิงก์จะได้ค่าเดียวกันทันที ·
+      ถ้าเครื่องนี้เคยตั้งค่าไว้เอง ค่าในเครื่องจะทับค่ากลาง กด <b>ใช้ค่ากลางของเว็บ</b> เพื่อล้างค่าเครื่องนี้ทิ้ง
+      ${CFG.hasRemote ? "· ตอนนี้เว็บมีไฟล์ค่ากลางอยู่แล้ว" : "· ตอนนี้ยังไม่มีไฟล์ค่ากลางบนเว็บ"}</p>
     <p class="adminnote">ค่าที่บันทึกอยู่ในเครื่องนี้เครื่องเดียว ถ้าเปิดจากมือถืออีกเครื่องต้องตั้งใหม่ · ชื่อวัตถุดิบต้องสะกดตรงกับรายการ 30 ตัวของร้าน ไอคอนกับสีถึงจะขึ้นถูกกลุ่ม</p>`;
   document.getElementById("adClose2").onclick = closeAdmin;
   const imgFile = document.getElementById("adImgFile");
@@ -609,6 +641,8 @@ function adminForm(){
       n2.textContent = ok ? "ใส่รูปแล้ว" : "รูปใหญ่เกินกว่าที่เครื่องเก็บได้ ลองใช้รูปเล็กลง";
     }catch(e){ note.textContent = "อ่านไฟล์รูปไม่สำเร็จ ลองไฟล์อื่น"; }
   };
+  document.getElementById("adExport").onclick = exportCFG;
+  document.getElementById("adClear").onclick = clearLocal;
   document.getElementById("adReset").onclick = () => {
     CFG = JSON.parse(JSON.stringify(DEFAULTS)); saveCFG(); applyCFG(); adminForm();
   };
@@ -1385,8 +1419,9 @@ function vCard(){
   });
 }
 
-loadCFG();
 bindAdminTap();
+render();
+loadCFG();
 if(location.hash.toLowerCase() === "#admin" || /(\?|&)admin\b/i.test(location.search)) openAdmin();
 window.addEventListener("hashchange", () => {
   if(location.hash.toLowerCase() === "#admin") openAdmin();
