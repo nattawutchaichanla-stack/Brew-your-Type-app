@@ -306,7 +306,7 @@ footer{margin-top:30px;padding-top:16px;border-top:1px dashed var(--line-2);
   <footer>
     บริษัท ไชยจันลา จำกัด · RANGSAN Academy · SAO Café · RANGSAN Coffee<br>
     จองรอบถัดไป LINE @saocafe · IG saocafe_official<br>
-    <span style="opacity:.55">v19 · 10 ก.ย. 2569</span>
+    <span style="opacity:.55">v20 · 10 ก.ย. 2569</span>
   </footer>
 </div>
 <div class="admin" id="admin"><div class="adminbox" id="adminBox"></div></div>
@@ -511,7 +511,7 @@ function fileToDataURL(file, maxW){
 }
 let CFG = JSON.parse(JSON.stringify(DEFAULTS));
 const CFG_KEY = "byt-config-v1";
-const APP_VER = "v19 · 10 ก.ย. 2569";
+const APP_VER = "v20 · 10 ก.ย. 2569";
 async function loadCFG(){
   let remote = null, local = null;
   try{
@@ -527,8 +527,22 @@ async function loadCFG(){
     const el = document.getElementById("baked-config");
     if(el) baked = JSON.parse(el.textContent);
   }catch(e){}
-  CFG = Object.assign(JSON.parse(JSON.stringify(DEFAULTS)), baked || {}, remote || {}, local || {});
-  CFG.img = Object.assign({}, DEFAULTS.img, (baked && baked.img) || {}, (remote && remote.img) || {}, (local && local.img) || {});
+  const merge = (...srcs) => {
+    const out = {};
+    srcs.forEach(s => {
+      if(!s) return;
+      Object.keys(s).forEach(k => {
+        const v = s[k];
+        if(v === "" || v === null || v === undefined) return;   /* ค่าว่างไม่ทับของเดิม */
+        if(Array.isArray(v) && !v.length) return;
+        out[k] = v;
+      });
+    });
+    return out;
+  };
+  CFG = Object.assign(JSON.parse(JSON.stringify(DEFAULTS)), merge(baked, remote, local));
+  CFG.img = Object.assign({}, DEFAULTS.img,
+    merge((baked && baked.img), (remote && remote.img), (local && local.img)));
   CFG.worldsText = Object.assign({}, (baked && baked.worldsText) || {}, (remote && remote.worldsText) || {}, (local && local.worldsText) || {});
   CFG.hasRemote = !!(remote || baked);
   CFG.hasLocal = !!local;
