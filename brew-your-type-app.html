@@ -1,0 +1,1397 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Brew Your Type · SAO Café</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F7F4EC; --surface:#FFFFFB; --surface-2:#FBF7EC;
+  --line:#E6E0D0; --line-2:#D2CAB6;
+  --ink:#14140F; --ink-2:#5F5C50; --ink-3:#96917F;
+  --green:#1E7A3D; --sage:#8CA37A; --sage-t:#E4EBDB;
+  --rose:#E2A9BC; --rose-t:#F9E6EC; --lilac:#C9BEE0;
+  --wash-y:#FBEBBF; --wash-b:#D6E6F4; --wash-p:#F7DEE6; --wash-g:#DDE7D5;
+  --cinnamon:#A9743C; --citrus:#D3822B; --amber:#C9973A; --cocoa:#7A5230; --red:#C0392B;
+  --world:#1E7A3D; --world-t:#E4EBDB; --world-d:#1B4D2C;
+  --r:18px; --bar:88px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background-color:var(--bg);
+  background-image:
+    radial-gradient(circle at 10% 6%, rgba(251,235,191,.85), transparent 40%),
+    radial-gradient(circle at 90% 12%, rgba(214,230,244,.8), transparent 38%),
+    radial-gradient(circle at 82% 72%, rgba(247,222,230,.75), transparent 36%),
+    radial-gradient(circle at 8% 80%, rgba(221,231,213,.7), transparent 38%);
+  background-repeat:no-repeat;
+  background-attachment:fixed;
+  color:var(--ink);font-family:"Anuphan",system-ui,sans-serif;font-size:16px;line-height:1.65;
+  -webkit-font-smoothing:antialiased}
+.sheet{max-width:520px;margin:0 auto;padding:0 18px calc(var(--bar) + 28px)}
+header{position:sticky;top:0;z-index:9;background:rgba(247,244,236,.93);
+  backdrop-filter:blur(10px);margin:0 -18px;padding:12px 18px 0;border-bottom:1px solid var(--line)}
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.mark{display:flex;align-items:center;gap:8px}
+.dots span{display:inline-block;width:6px;height:6px;border-radius:6px;background:var(--red);margin-right:2px}
+.mark b{font-size:14px;font-weight:600;letter-spacing:.16em;color:var(--green)}
+.mark i{font-style:normal;font-size:11.5px;color:var(--ink-3)}
+.count{border:1px solid var(--line-2);border-radius:9px;padding:2px 10px;font-size:11px;
+  color:var(--ink-2);text-align:center;line-height:1.35;background:var(--surface);
+  transform:rotate(1.5deg)}
+.count b{display:block;font-size:15px;font-weight:700;color:var(--ink)}
+.progress{height:4px;background:var(--line);margin:10px 0 0;border-radius:4px;overflow:hidden}
+.progress i{display:block;height:4px;background:var(--world);width:0;
+  transition:width .45s cubic-bezier(.2,.7,.2,1),background .3s}
+
+.band{position:relative;overflow:hidden;margin:18px -18px 0;padding:24px 18px 26px;
+  background:var(--world-t);color:var(--ink)}
+.band::after{content:"";position:absolute;right:-40px;top:-40px;width:180px;height:180px;
+  border-radius:50%;background:#fff;opacity:.45;filter:blur(24px)}
+.band .in{position:relative;z-index:2}
+.band .kicker{font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--world)}
+.band h1{color:var(--ink);margin:8px 0 4px}
+.band h2{color:var(--ink);margin:8px 0 4px}
+.band p{margin:6px 0 0;font-size:14.5px;color:var(--ink-2);max-width:32ch}
+.band .art{position:absolute;z-index:1;opacity:.5;right:-16px;bottom:-22px}
+.band .stamp{position:absolute;z-index:3;top:16px;right:16px;border:1.5px solid var(--world);
+  border-radius:999px;padding:5px 12px;font-size:11.5px;transform:rotate(6deg);
+  color:var(--world);background:rgba(255,255,255,.6)}
+
+.tag{display:inline-flex;align-items:center;gap:7px;background:var(--wash-y);color:var(--ink);
+  font-size:12px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;
+  padding:5px 13px;border-radius:8px;margin:24px 0 10px}
+.tag.world{background:var(--world-t);color:var(--ink)}
+.tag.plain{background:transparent;color:var(--ink-3);border:1px dashed var(--line-2);letter-spacing:.06em}
+h1{font-size:37px;line-height:1.14;letter-spacing:-.025em;font-weight:700;margin:0 0 8px}
+h2{font-size:25px;line-height:1.3;letter-spacing:-.018em;font-weight:600;margin:0 0 8px}
+.lead{font-size:15.5px;color:var(--ink-2);margin:0 0 20px;max-width:38ch}
+.big{font-size:70px;line-height:1;letter-spacing:-.045em;font-weight:700;color:var(--world)}
+.divider{display:flex;align-items:center;gap:10px;margin:26px 0 4px;color:var(--ink-3)}
+.divider::before,.divider::after{content:"";flex:1;height:1px;
+  background:repeating-linear-gradient(90deg,var(--line-2) 0 5px,transparent 5px 10px)}
+
+input[type=text]{width:100%;padding:15px 16px;border:1.5px solid var(--line-2);border-radius:13px;
+  background:var(--surface);color:var(--ink);font-family:inherit;font-size:17px;transition:border-color .15s}
+input[type=text]:focus{border-color:var(--world);outline:none}
+input::placeholder{color:var(--ink-3)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--world);outline-offset:2px}
+
+.opt{display:flex;align-items:center;gap:11px;width:100%;text-align:right;padding:14px 15px;
+  margin-top:10px;border:1.5px solid var(--line);border-radius:15px;background:var(--surface);
+  color:var(--ink);font-family:inherit;font-size:16px;line-height:1.5;cursor:pointer;
+  transition:border-color .15s,background .15s,transform .1s}
+.opt:active{transform:scale(.99)}
+.opt .txt{flex:1}
+.opt .tick{width:20px;height:20px;border-radius:20px;border:1.5px solid var(--line-2);flex:none;
+  display:grid;place-items:center;transition:.15s}
+.opt .tick::after{content:"";width:9px;height:9px;border-radius:9px;background:transparent;transition:.15s}
+.opt[aria-pressed=true]{border-color:var(--world);background:var(--world-t)}
+.opt[aria-pressed=true] .tick{border-color:var(--world)}
+.opt[aria-pressed=true] .tick::after{background:var(--world)}
+.opt.right{border-color:var(--sage);background:var(--sage-t)}
+.opt.wrong{border-color:#E0BEC5;background:var(--rose-t);color:#8E5265}
+.ic{width:26px;height:26px;flex:none}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.grid2 .opt{margin-top:0;padding:13px 11px;font-size:15px;gap:9px}
+.grid2 .opt .tick{display:none}
+.legend{display:flex;flex-wrap:wrap;gap:9px;margin-top:14px}
+.legend span{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink-2);
+  background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:5px 11px}
+.legend i{width:9px;height:9px;border-radius:9px;display:inline-block}
+
+.card{position:relative;overflow:hidden;background:var(--surface);border:1.5px solid var(--line);
+  border-radius:var(--r);padding:18px 20px;margin-top:16px}
+.card.tinted{background:var(--world-t);border-color:var(--world)}
+.card h3{font-size:17px;font-weight:600;margin:0 0 2px}
+.card .sub{font-size:14px;color:var(--ink-2);margin:0}
+.card .corner{position:absolute;right:-10px;top:-10px;opacity:.35;pointer-events:none}
+.rows{margin-top:14px;position:relative;z-index:2}
+.rows div{display:flex;justify-content:space-between;gap:16px;padding:9px 0;font-size:15px;
+  border-top:1px dashed var(--line-2)}
+.rows div:first-child{border-top:0;padding-top:2px}
+.rows span:first-child{color:var(--ink-3);flex:none;display:inline-flex;align-items:center;gap:7px}
+.rows span:last-child{text-align:left;font-weight:500}
+.meter{margin-top:14px}
+.meter div{display:flex;align-items:center;gap:10px;margin-top:9px;font-size:13.5px;color:var(--ink-2)}
+.meter b{flex:none;width:74px;font-weight:500}
+.meter u{flex:1;height:7px;border-radius:7px;background:var(--line);text-decoration:none;overflow:hidden}
+.meter u i{display:block;height:7px;background:var(--world);border-radius:7px}
+.chip{display:inline-block;margin:0 8px 8px 0;padding:8px 15px;border:1.5px solid var(--line-2);
+  border-radius:999px;background:var(--surface);font-family:inherit;font-size:14.5px;
+  color:var(--ink-2);cursor:pointer;transition:.15s}
+.chip:hover{border-color:var(--world);color:var(--world);background:var(--world-t)}
+.wheelwrap{position:relative;display:grid;place-items:center;margin-top:16px;
+  padding:10px 0 4px}
+.wheelwrap svg.wheel{width:min(290px,74vw);height:auto;overflow:visible;
+  filter:drop-shadow(0 6px 14px rgba(25,26,18,.14))}
+.pointer{position:absolute;top:-4px;left:50%;transform:translateX(-50%);z-index:4}
+#wheelG{transform-box:fill-box;transform-origin:center;
+  transition:transform 4.2s cubic-bezier(.13,.72,.14,1)}
+.wheelwrap.fast #wheelG{transition:none}
+.hubtxt{font-family:"Anuphan",sans-serif;font-weight:700}
+.result{margin-top:14px;text-align:center;font-size:26px;font-weight:700;letter-spacing:-.02em;
+  min-height:38px}
+.result small{display:block;font-size:13px;font-weight:400;color:var(--ink-3);letter-spacing:0}
+@media (prefers-reduced-motion:reduce){#wheelG{transition:none}}
+.slot{position:relative;overflow:hidden;display:grid;place-items:center;min-height:138px;
+  margin-top:12px;padding:24px 16px;border:1.5px dashed var(--line-2);border-radius:var(--r);
+  background:var(--surface-2);font-size:27px;font-weight:700;letter-spacing:-.02em;text-align:center}
+.slot .art{position:absolute;opacity:.22;left:-18px;bottom:-18px}
+.slot.rolling{color:var(--ink-3);filter:blur(.5px)}
+@media (prefers-reduced-motion:reduce){.slot.rolling{filter:none}.progress i{transition:none}}
+.link{display:block;width:100%;margin-top:12px;padding:13px;border:1.5px solid var(--line-2);
+  border-radius:12px;background:var(--surface);color:var(--ink);font-family:inherit;
+  font-size:15px;font-weight:600;cursor:pointer}
+.hero{position:relative;overflow:hidden;background:var(--world-d);color:#FBF8EE;
+  border-radius:24px;padding:26px 22px;margin-top:16px}
+.hero::after{content:"";position:absolute;inset:0;opacity:.13;
+  background:repeating-linear-gradient(135deg,#fff 0 1px,transparent 1px 11px)}
+.hero>*{position:relative;z-index:2}
+.hero .art{position:absolute;z-index:1;opacity:.4;right:-24px;top:-16px}
+.hero .art2{position:absolute;z-index:1;opacity:.3;left:-22px;bottom:-26px}
+.hero .no{font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;opacity:.75}
+.hero h2{color:#FFFDF6;margin:12px 0 4px;font-size:32px}
+.hero .sub{font-size:14.5px;margin:0;opacity:.8}
+.hero .rows div{border-top-color:rgba(255,255,255,.2)}
+.hero .rows span:first-child{color:rgba(255,255,255,.62)}
+.hero .rows span:last-child{color:#FBF8EE}
+.hero .seal{display:inline-block;margin-top:18px;padding:7px 15px;border-radius:999px;
+  border:1.5px solid rgba(255,255,255,.45);font-size:13px;transform:rotate(-1.5deg)}
+.bandimg{position:absolute;right:-6px;bottom:-6px;width:150px;height:auto;z-index:1;
+  border-radius:14px;box-shadow:0 6px 16px rgba(20,20,15,.18)}
+.cornimg{position:absolute;right:12px;bottom:10px;width:92px;height:auto;border-radius:10px;z-index:3;
+  box-shadow:0 4px 12px rgba(20,20,15,.16)}
+.coverfull{display:block;width:100%;max-width:400px;margin:16px auto 0;height:auto;border-radius:16px}
+.coverimg{width:100%;border-radius:16px;margin-top:14px;display:block}
+.imgrow{display:flex;align-items:center;gap:12px;margin-top:10px}
+.imgrow img{width:56px;height:56px;object-fit:cover;border-radius:10px;border:1px solid var(--line)}
+.imgrow .none{width:56px;height:56px;border-radius:10px;border:1.5px dashed var(--line-2);
+  display:grid;place-items:center;font-size:11px;color:var(--ink-3)}
+.imgrow button{padding:9px 14px;border-radius:10px;border:1.5px solid var(--line-2);background:var(--surface);
+  font-family:inherit;font-size:14px;cursor:pointer;color:var(--ink)}
+.admin{position:fixed;inset:0;z-index:20;background:rgba(20,20,15,.55);backdrop-filter:blur(4px);
+  display:none;overflow-y:auto;padding:24px 16px 60px}
+.admin.on{display:block}
+.adminbox{max-width:520px;margin:0 auto;background:var(--surface);border:1.5px solid var(--line);
+  border-radius:18px;padding:20px}
+.adminbox h3{font-size:20px;font-weight:700;margin:0 0 4px}
+.adminbox p.sub{font-size:13.5px;color:var(--ink-2);margin:0 0 14px}
+.adminbox label{display:block;font-size:12.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--ink-3);margin:16px 0 6px}
+.adminbox textarea,.adminbox input{width:100%;padding:11px 13px;border:1.5px solid var(--line-2);
+  border-radius:11px;background:var(--surface-2);color:var(--ink);font-family:inherit;font-size:15px;line-height:1.6}
+.adminbox textarea{min-height:96px;resize:vertical}
+.adminrow{display:flex;gap:10px;margin-top:18px}
+.adminrow button{flex:1;padding:14px;border-radius:12px;border:0;font-family:inherit;font-size:15.5px;
+  font-weight:600;cursor:pointer}
+.adminrow .save{background:var(--green);color:#FBF8EE}
+.adminrow .close{background:var(--line);color:var(--ink)}
+.adminrow .reset{background:transparent;border:1.5px solid var(--line-2);color:var(--ink-2)}
+.adminnote{font-size:12.5px;color:var(--ink-3);margin-top:12px;line-height:1.7}
+.photoslot{position:relative;z-index:3;margin:0 0 18px;border-radius:16px;overflow:hidden;
+  aspect-ratio:4/5;display:grid;place-items:center;cursor:pointer;
+  background:rgba(255,255,255,.10);border:1.5px dashed rgba(255,255,255,.45)}
+.photoslot img{width:100%;height:100%;object-fit:cover;display:block}
+.photoslot .ph{text-align:center;padding:22px;font-size:14.5px;line-height:1.7;color:rgba(251,248,238,.85)}
+.photoslot .ph svg{width:26px;height:26px;display:block;margin:0 auto 8px}
+.photoslot .swap{position:absolute;right:10px;bottom:10px;background:rgba(20,20,15,.6);
+  color:#FBF8EE;font-size:12.5px;padding:6px 12px;border-radius:999px;backdrop-filter:blur(6px)}
+.photobox{margin-top:16px}
+.photobox input[type=file]{display:none}
+.shot{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;padding:15px;
+  border:1.5px dashed var(--line-2);border-radius:14px;background:var(--surface);
+  color:var(--ink);font-family:inherit;font-size:15.5px;font-weight:600;cursor:pointer}
+.shot svg{width:20px;height:20px}
+.pcwrap{margin-top:14px;display:none}
+.pcwrap.on{display:block}
+.pcwrap img{width:100%;border-radius:16px;border:1.5px solid var(--line);display:block}
+.pchint{font-size:12.5px;color:var(--ink-3);margin-top:10px;text-align:center;line-height:1.6}
+.note{font-size:13.5px;color:var(--ink-3);margin-top:16px;line-height:1.75}
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:10;background:rgba(247,244,236,.96);
+  backdrop-filter:blur(12px);border-top:1.5px solid var(--line);
+  padding:13px 18px calc(13px + env(safe-area-inset-bottom))}
+.bar .inner{max-width:520px;margin:0 auto}
+.bar button{width:100%;padding:17px;border:0;border-radius:14px;background:var(--world);
+  color:#FBF8EE;font-family:inherit;font-size:17px;font-weight:600;cursor:pointer;
+  transition:transform .12s,background .2s;box-shadow:0 4px 0 rgba(25,26,18,.16)}
+.bar button:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(25,26,18,.16)}
+.bar button[disabled]{background:var(--line-2);color:#fff;box-shadow:none;cursor:not-allowed}
+.bar.hidden{display:none}
+footer{margin-top:30px;padding-top:16px;border-top:1px dashed var(--line-2);
+  font-size:12.5px;color:var(--ink-3);line-height:1.9}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="ic-flower" viewBox="0 0 24 24">
+  <g fill="currentColor"><circle cx="12" cy="6" r="3.4"/><circle cx="12" cy="18" r="3.4"/>
+  <circle cx="6" cy="12" r="3.4"/><circle cx="18" cy="12" r="3.4"/></g>
+  <circle cx="12" cy="12" r="3" fill="#F7F3E9"/></symbol>
+<symbol id="ic-citrus" viewBox="0 0 24 24">
+  <circle cx="12" cy="12" r="10" fill="currentColor" opacity=".22"/>
+  <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  <g stroke="currentColor" stroke-width="1.2" opacity=".8"><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6L5.6 18.4"/></g></symbol>
+<symbol id="ic-leaf" viewBox="0 0 24 24">
+  <path d="M20 4c0 9-5 15-13 15C7 10 12 4 20 4z" fill="currentColor" opacity=".75"/>
+  <path d="M20 4C14 8 10 13 7 19" stroke="#F7F3E9" stroke-width="1.5" fill="none"/></symbol>
+<symbol id="ic-anise" viewBox="0 0 24 24">
+  <g fill="currentColor"><path d="M12 1l2.6 6.4L21 5l-2.4 6.4L24 14l-6.7.6L18 21l-6-3.4L6 21l.7-6.4L0 14l5.4-2.6L3 5l6.4 2.4z" transform="scale(.92) translate(1,1)"/></g></symbol>
+<symbol id="ic-drop" viewBox="0 0 24 24">
+  <path d="M12 2c5 6.5 7.5 10 7.5 13A7.5 7.5 0 014.5 15C4.5 12 7 8.5 12 2z" fill="currentColor" opacity=".8"/></symbol>
+<symbol id="ic-bean" viewBox="0 0 24 24">
+  <ellipse cx="12" cy="12" rx="9" ry="6.5" fill="currentColor" opacity=".8" transform="rotate(-25 12 12)"/>
+  <path d="M5 15c4-1 10-5 14-9" stroke="#F7F3E9" stroke-width="1.6" fill="none"/></symbol>
+<symbol id="d-lav" viewBox="0 0 120 120">
+  <path d="M60 118V26" stroke="currentColor" stroke-width="3" fill="none"/>
+  <g fill="currentColor">
+    <ellipse cx="60" cy="22" rx="7" ry="12"/><ellipse cx="48" cy="36" rx="6" ry="10"/>
+    <ellipse cx="72" cy="36" rx="6" ry="10"/><ellipse cx="50" cy="54" rx="6" ry="10"/>
+    <ellipse cx="70" cy="54" rx="6" ry="10"/></g>
+  <path d="M60 80c-16 0-24-7-27-19 15-2 25 5 27 19zM60 80c16 0 24-7 27-19-15-2-25 5-27 19z"
+    fill="currentColor" opacity=".7"/></symbol>
+<symbol id="d-orange" viewBox="0 0 120 120">
+  <circle cx="60" cy="60" r="54" fill="currentColor" opacity=".35"/>
+  <circle cx="60" cy="60" r="42" fill="none" stroke="currentColor" stroke-width="3"/>
+  <g stroke="currentColor" stroke-width="2.5"><path d="M60 18v84M18 60h84M30 30l60 60M90 30L30 90"/></g></symbol>
+<symbol id="d-jar" viewBox="0 0 120 120">
+  <rect x="34" y="14" width="52" height="14" rx="4" fill="currentColor"/>
+  <rect x="28" y="30" width="64" height="76" rx="12" fill="currentColor" opacity=".55"/>
+  <rect x="40" y="50" width="40" height="36" rx="5" fill="#F7F3E9" opacity=".75"/></symbol>
+<symbol id="d-glass" viewBox="0 0 120 120">
+  <path d="M34 18h52l-7 92H41z" fill="currentColor" opacity=".5"/>
+  <path d="M36 42h48l-2 26H38z" fill="currentColor" opacity=".8"/>
+  <circle cx="52" cy="92" r="5" fill="currentColor"/><circle cx="66" cy="98" r="5" fill="currentColor"/>
+  <circle cx="76" cy="88" r="4" fill="currentColor"/></symbol>
+</defs></svg>
+
+<div class="sheet">
+  <header>
+    <div class="top">
+      <div class="mark">
+        <span class="dots"><span></span><span></span><span></span></span>
+        <b>SAO CAFÉ</b><i>ไชยจันลา</i>
+      </div>
+      <span class="count" id="count"></span>
+    </div>
+    <div class="progress"><i id="fill"></i></div>
+  </header>
+  <main id="app"></main>
+  <footer>
+    บริษัท ไชยจันลา จำกัด · RANGSAN Academy · SAO Café · RANGSAN Coffee<br>
+    จองรอบถัดไป LINE @saocafe · IG saocafe_official
+  </footer>
+</div>
+<div class="admin" id="admin"><div class="adminbox" id="adminBox"></div></div>
+<div class="bar hidden" id="bar"><div class="inner"><button id="cta"></button></div></div>
+
+<script>
+const CAT = {
+  floral:{c:"#C77E92",l:"ดอกไม้",i:"ic-flower"},
+  citrus:{c:"#D3822B",l:"สดชื่น",i:"ic-citrus"},
+  herbal:{c:"#6E8B5A",l:"สมุนไพร",i:"ic-leaf"},
+  spiced:{c:"#A96B33",l:"เครื่องเทศ",i:"ic-anise"},
+  sweet:{c:"#C9A24A",l:"หวานผลไม้",i:"ic-drop"},
+  gourmand:{c:"#7A5230",l:"กาแฟ & โกโก้",i:"ic-bean"}
+};
+const ING = {
+  "มะลิ":"floral","ดอกบุนนาค":"floral","เก๊กฮวย":"floral","หอมหมื่นลี้":"floral",
+  "คาโมมายล์":"floral","ลาเวนเดอร์":"floral","กุหลาบ":"floral",
+  "เปลือกส้ม":"citrus","เลมอน":"citrus","ตะไคร้":"citrus","ผิวมะกรูด":"citrus",
+  "ใบเตยแห้ง":"herbal","มะตูม":"herbal","ลูกผักชี":"herbal",
+  "ขิง":"spiced","อบเชย":"spiced","กานพลู":"spiced","ลูกจันทน์เทศป่น":"spiced",
+  "ดอกจันทน์":"spiced","กระวาน":"spiced","โป๊ยกั๊ก":"spiced",
+  "ดอกคำฝอย":"sweet","สับปะรดอบแห้ง":"sweet","แอปเปิ้ลอบแห้ง":"sweet",
+  "โกโก้นิบ":"gourmand","เมล็ดกาแฟสีนวล":"gourmand","เมล็ดกาแฟแมวเป้า":"gourmand",
+  "กาแฟขี้ชะมด":"gourmand","เมล็ดกาแฟวานิลลาวิสกี้":"gourmand","เมล็ดกาแฟอเมทิสลัม":"gourmand"
+};
+const cat = n => CAT[ING[n]] || {c:"#B7B09A",l:"อื่น ๆ",i:"ic-drop"};
+const icon = (n,size) => `<svg class="ic" style="color:${cat(n).c};width:${size||26}px;height:${size||26}px"><use href="#${cat(n).i}"/></svg>`;
+
+const WORLDS = {
+  NT:{code:"NT",title:"Clear",who:"Analysts · นักวิเคราะห์",mood:"Cool · Sharp · Clean",
+      color:"#4C7FA6",tint:"#D6E6F4",deep:"#274D68",art:"d-lav",
+      meter:[["สดชื่น",85],["อบอุ่น",30],["ดอกไม้",25],["คมชัด",95]],
+      base:["ผิวมะกรูด","เลมอน","กระวาน","ลูกผักชี"],
+      names:["Clear mind","The thinker","Focus mode"]},
+  NF:{code:"NF",title:"Bloom",who:"Diplomats · นักการทูต",mood:"Floral · Soft · Gentle",
+      color:"#C2678A",tint:"#F7DEE6",deep:"#7A3A52",art:"d-lav",
+      meter:[["สดชื่น",40],["อบอุ่น",60],["ดอกไม้",95],["คมชัด",30]],
+      base:["มะลิ","ดอกบุนนาค","หอมหมื่นลี้","กุหลาบ"],
+      names:["Soft heart","Inner bloom","The dreamer"]},
+  SJ:{code:"SJ",title:"Root",who:"Sentinels · ผู้พิทักษ์",mood:"Warm · Herbal · Spicy",
+      color:"#B07A3C",tint:"#F2DEC4",deep:"#6B4520",art:"d-jar",
+      meter:[["สดชื่น",30],["อบอุ่น",95],["ดอกไม้",25],["คมชัด",60]],
+      base:["อบเชย","กานพลู","โป๊ยกั๊ก","ลูกจันทน์เทศป่น"],
+      names:["Ground","Stay true","The keeper"]},
+  SP:{code:"SP",title:"Spark",who:"Explorers · นักสำรวจ",mood:"Fresh · Bright · Energetic",
+      color:"#C9973A",tint:"#FBEBBF",deep:"#7E5A15",art:"d-orange",
+      meter:[["สดชื่น",95],["อบอุ่น",50],["ดอกไม้",30],["คมชัด",70]],
+      base:["ตะไคร้","เปลือกส้ม","ขิง","สับปะรดอบแห้ง"],
+      names:["Go wild","Fresh start","The explorer"]}
+};
+const MOD = {
+  E:{note:"เปลือกส้ม / ตะไคร้",why:"เพิ่มความสดใส"},
+  I:{note:"ลาเวนเดอร์ / คาโมมายล์",why:"เพิ่มความสงบและนุ่ม"},
+  S:{note:"อบเชย / กระวาน",why:"กลิ่นจับต้องได้ อบอุ่น"},
+  N:{note:"มะลิ / หอมหมื่นลี้",why:"กลิ่นมีมิติขึ้น"},
+  T:{note:"ผิวมะกรูด / เลมอน",why:"คมและสะอาด"},
+  F:{note:"กุหลาบ / ดอกบุนนาค",why:"นุ่มและมีอารมณ์"},
+  J:{note:"กานพลู / โป๊ยกั๊ก",why:"หนักแน่น มีโครงสร้าง"},
+  P:{note:"เก๊กฮวย / สับปะรดอบแห้ง",why:"เบาและสปอนเทเนียส"}
+};
+const Q = [
+  {t:"ในงานที่มีคนเยอะ ๆ คุณคือคนแบบไหน",o:[
+    ["E",2,"ทักทายให้ครบทุกคนในห้อง"],["E",1,"คุยกับคนใหม่ได้สองสามคน"],
+    ["I",1,"เกาะกลุ่มเพื่อนที่รู้จัก"],["I",2,"หามุมเงียบ ๆ นั่งดูคนอื่น"]]},
+  {t:"เจอผู้คนมาทั้งวัน ตกเย็นคุณ",o:[
+    ["E",2,"อยากต่อรอบสอง"],["E",1,"ยังคุยต่อได้อีกนิด"],
+    ["I",1,"อยากกลับบ้านไปนอนเล่นมือถือ"],["I",2,"ปิดเสียงมือถือ ห้ามใครทัก"]]},
+  {t:"มีเรื่องค้างใจ คุณทำยังไง",o:[
+    ["E",2,"โทรหาเพื่อนทันที"],["E",1,"รอเจอกันแล้วเล่าให้ฟัง"],
+    ["I",1,"เขียนโน้ตในมือถือก่อน"],["I",2,"เก็บไว้คิดคนเดียวจนจบ"]]},
+  {t:"ในที่ประชุม คุณมักจะ",o:[
+    ["E",2,"ยกมือพูดคนแรก"],["E",1,"พูดตอนมีจังหวะ"],
+    ["I",1,"พูดเมื่อถูกถาม"],["I",2,"จดไว้แล้วส่งข้อความทีหลัง"]]},
+  {t:"คนรอบตัวมองคุณว่า",o:[
+    ["E",2,"ตัวป่วนประจำกลุ่ม"],["E",1,"คุยง่าย เข้าหาง่าย"],
+    ["I",1,"เงียบ แต่สนิทแล้วเป็นกันเอง"],["I",2,"ลึกลับ ต้องขุดถึงจะเจอ"]]},
+  {t:"คุณสนใจอะไรมากกว่ากัน",o:[
+    ["S",2,"รายละเอียดตรงหน้าให้ครบทุกจุด"],["S",1,"ของจริงที่จับต้องได้"],
+    ["N",1,"ภาพรวมและความเป็นไปได้"],["N",2,"จินตนาการไปไกลถึงอีกสิบปี"]]},
+  {t:"เวลาเล่าเรื่องให้คนอื่นฟัง",o:[
+    ["S",2,"เล่าเป็นลำดับ หนึ่งสองสาม ไม่ข้าม"],["S",1,"เล่าตามจริง ใส่รายละเอียดบ้าง"],
+    ["N",1,"เล่าภาพรวมแล้วแตกประเด็น"],["N",2,"เล่าจนหลุดไปอีกสามเรื่อง"]]},
+  {t:"คุณเชื่ออะไรมากกว่า",o:[
+    ["S",2,"ต้องเห็นตัวเลขก่อนถึงเชื่อ"],["S",1,"เชื่อจากที่เคยเจอมาเอง"],
+    ["N",1,"เชื่อความรู้สึกที่โยงกันได้"],["N",2,"เชื่อลางสังหรณ์เต็มร้อย"]]},
+  {t:"งานแบบไหนที่คุณทำได้ดีกว่า",o:[
+    ["S",2,"ทำตามคู่มือเป๊ะทุกขั้น"],["S",1,"ใช้วิธีที่พิสูจน์แล้วว่าเวิร์ก"],
+    ["N",1,"ปรับวิธีใหม่ระหว่างทาง"],["N",2,"รื้อทำใหม่ให้ไม่เหมือนใคร"]]},
+  {t:"เนื้อหาแบบไหนที่อ่านแล้วสนุกกว่า",o:[
+    ["S",2,"สูตรที่ทำตามได้พรุ่งนี้เลย"],["S",1,"เคสจริงที่มีตัวอย่าง"],
+    ["N",1,"แนวคิดที่เอาไปต่อยอดได้"],["N",2,"ทฤษฎีที่ยังไม่มีใครลองทำ"]]},
+  {t:"เวลาตัดสินใจเรื่องใหญ่",o:[
+    ["T",2,"กางตารางเทียบข้อดีข้อเสีย"],["T",1,"ดูเหตุผลเป็นหลัก"],
+    ["F",1,"ดูว่าคนรอบตัวจะรู้สึกยังไง"],["F",2,"เลือกทางที่ไม่ทำใครเสียใจ"]]},
+  {t:"ต้องบอกว่างานของเพื่อนยังไม่ดี",o:[
+    ["T",2,"บอกตรง ๆ ทุกข้อที่เห็น"],["T",1,"บอกตรงแต่เลี่ยงคำแรง"],
+    ["F",1,"ชมก่อนค่อยบอกที่ต้องแก้"],["F",2,"รอจังหวะที่เขาพร้อมฟังจริง ๆ"]]},
+  {t:"คำชมแบบไหนที่คุณดีใจกว่า",o:[
+    ["T",2,"แม่นและคิดเป็นระบบมาก"],["T",1,"ตัดสินใจเฉียบ"],
+    ["F",1,"อยู่ด้วยแล้วสบายใจ"],["F",2,"เป็นคนที่เข้าใจคนอื่นที่สุด"]]},
+  {t:"เห็นคนสองคนเถียงกัน คุณ",o:[
+    ["T",2,"จับผิดตรรกะทั้งสองฝั่ง"],["T",1,"ดูว่าใครมีเหตุผลกว่า"],
+    ["F",1,"ดูว่าใครกำลังเสียใจ"],["F",2,"เข้าไปห้ามก่อนบานปลาย"]]},
+  {t:"เรื่องกฎกับข้อยกเว้น คุณคิดว่า",o:[
+    ["T",2,"กฎคือกฎ ไม่มีข้อยกเว้น"],["T",1,"ควรใช้เหมือนกันกับทุกคน"],
+    ["F",1,"ยืดหยุ่นได้ถ้ามีเหตุผล"],["F",2,"คนสำคัญกว่ากฎเสมอ"]]},
+  {t:"งานที่มีเดดไลน์ คุณ",o:[
+    ["J",2,"เสร็จก่อนกำหนดหลายวัน"],["J",1,"เสร็จก่อนเส้นตายนิดหน่อย"],
+    ["P",1,"เร่งได้ตอนใกล้เส้นตาย"],["P",2,"พลังมาตอนเหลือสองชั่วโมง"]]},
+  {t:"ตารางชีวิตของคุณหน้าตาแบบไหน",o:[
+    ["J",2,"ลงปฏิทินครบทุกช่อง"],["J",1,"วางแผนหลัก ๆ ไว้"],
+    ["P",1,"มีคร่าว ๆ พอ"],["P",2,"ตื่นมาแล้วค่อยคิด"]]},
+  {t:"เวลาไปเที่ยว คุณ",o:[
+    ["J",2,"จองครบทุกอย่างล่วงหน้า"],["J",1,"จองที่พักไว้ ที่เหลือหาเอา"],
+    ["P",1,"จองแค่ตั๋วไป"],["P",2,"ถึงแล้วค่อยว่ากัน"]]},
+  {t:"เรื่องที่ต้องทำในแต่ละวัน",o:[
+    ["J",2,"ทำลิสต์แล้วขีดออกทีละข้อ"],["J",1,"จดหัวข้อใหญ่ไว้กันลืม"],
+    ["P",1,"จำเอาได้ ไม่ต้องจด"],["P",2,"นึกอะไรออกก็ทำอันนั้น"]]},
+  {t:"เวลามีตัวเลือกหลายทาง คุณ",o:[
+    ["J",2,"เลือกให้จบภายในห้านาที"],["J",1,"เลือกเร็ว ๆ จะได้เดินต่อ"],
+    ["P",1,"ขอดูอีกสักพัก"],["P",2,"เปิดไว้ทุกทางจนวินาทีสุดท้าย"]]}
+];
+let SMELL = [
+  {n:1,ans:"ตะไคร้",opts:["ตะไคร้","อบเชย","ลาเวนเดอร์","กานพลู"]},
+  {n:2,ans:"อบเชย",opts:["เปลือกส้ม","อบเชย","มะลิ","ขิง"]},
+  {n:3,ans:"ลาเวนเดอร์",opts:["กุหลาบ","โป๊ยกั๊ก","ลาเวนเดอร์","เก๊กฮวย"]},
+  {n:4,ans:"เปลือกส้ม",opts:["เปลือกส้ม","กระวาน","โกโก้นิบ","ตะไคร้"]},
+  {n:5,ans:"กานพลู",opts:["ผิวมะกรูด","กานพลู","หอมหมื่นลี้","ดอกจันทน์"]}
+];
+let TOUCH = ["ลาเวนเดอร์","คาโมมายล์","เก๊กฮวย","ใบเตยแห้ง","โกโก้นิบ","เมล็ดกาแฟวานิลลาวิสกี้"];
+let POOL = ["ดอกจันทน์","ดอกคำฝอย","มะตูม","ลูกผักชี","กระวาน","เก๊กฮวย","ผิวมะกรูด","ขิง"];
+let TOPPINGS = ["ฟองนมโรยอบเชย","วิปครีม","ไข่มุก","เจลลี่ชาไทย","มะพร้าวคั่ว","ครีมชีสหอมส้ม"];
+let TEA_BASE = ["Blend tea","Chinese tea","Southern tea","Neon spark"];
+const SWEET = ["หวานน้อย","หวานปกติ","หวานมาก"];
+
+const art = (id,w,cls,style) =>
+  `<svg class="${cls||"art"}" width="${w}" height="${w}" viewBox="0 0 120 120" style="${style||""};color:currentColor" aria-hidden="true"><use href="#${id}"/></svg>`;
+
+
+/* ---------- ตั้งค่าที่แอดมินแก้ได้ (เก็บในเครื่องเครื่องนี้เท่านั้น) ---------- */
+const DEFAULTS = {
+  pin: "2569",
+  worlds: {NT:WORLDS.NT.base.slice(), NF:WORLDS.NF.base.slice(),
+           SJ:WORLDS.SJ.base.slice(), SP:WORLDS.SP.base.slice()},
+  touch: TOUCH.slice(),
+  pool: POOL.slice(),
+  toppings: TOPPINGS.slice(),
+  teabase: TEA_BASE.slice(),
+  smell: SMELL.map(s => s.ans),
+  ig: "saocafe_official",
+  line: "@saocafe",
+  img: {logo:"", cover:"", includes:"", pcbg:"", NT:"", NF:"", SJ:"", SP:""},
+  worldsText: {
+    NT: WORLDS.NT.base.join("\n"), NF: WORLDS.NF.base.join("\n"),
+    SJ: WORLDS.SJ.base.join("\n"), SP: WORLDS.SP.base.join("\n")
+  }
+};
+/* หนึ่งบรรทัด = วัตถุดิบ 1 อย่าง · หรือ "ชื่อกลุ่มย่อย: ของ1, ของ2" = กลุ่มย่อยในบ้านนั้น */
+const subKey = (code,name) => code + "::" + name;
+function allSubs(){
+  const out = [];
+  ["NT","NF","SJ","SP"].forEach(code => {
+    (WORLDS[code].groups || []).forEach(g => { if(g.name) out.push({code, name:g.name, key:subKey(code,g.name)}); });
+  });
+  return out;
+}
+function parseWorld(text){
+  const groups = []; let plain = [];
+  parseLines(text).forEach(ln => {
+    const i = ln.indexOf(":");
+    if(i > 0){
+      const name = ln.slice(0,i).trim();
+      const items = ln.slice(i+1).split(/[,·]/).map(x => x.trim()).filter(Boolean);
+      if(items.length) groups.push({name, items});
+    } else plain.push(ln);
+  });
+  if(plain.length) groups.unshift({name:"", items:plain});
+  const base = groups.reduce((a,g) => a.concat(g.items), []);
+  return {base, groups};
+}
+function fileToDataURL(file, maxW){
+  return new Promise((res,rej) => {
+    const fr = new FileReader();
+    fr.onload = () => {
+      const im = new Image();
+      im.onload = () => {
+        const sc = Math.min(1, maxW/im.width);
+        const cv = document.createElement("canvas");
+        cv.width = Math.round(im.width*sc); cv.height = Math.round(im.height*sc);
+        cv.getContext("2d").drawImage(im,0,0,cv.width,cv.height);
+        res(cv.toDataURL("image/jpeg", .82));
+      };
+      im.onerror = rej; im.src = fr.result;
+    };
+    fr.onerror = rej;
+    fr.readAsDataURL(file);
+  });
+}
+let CFG = JSON.parse(JSON.stringify(DEFAULTS));
+const CFG_KEY = "byt-config-v1";
+function loadCFG(){
+  try{
+    const raw = localStorage.getItem(CFG_KEY);
+    if(raw) CFG = Object.assign(JSON.parse(JSON.stringify(DEFAULTS)), JSON.parse(raw));
+  }catch(e){}
+  applyCFG();
+}
+function saveCFG(){
+  try{ localStorage.setItem(CFG_KEY, JSON.stringify(CFG)); return true; }catch(e){ return false; }
+}
+function applyCFG(){
+  if(!CFG.img) CFG.img = JSON.parse(JSON.stringify(DEFAULTS.img));
+  if(!CFG.worldsText) CFG.worldsText = {};
+  ["NT","NF","SJ","SP"].forEach(k => {
+    const txt = (CFG.worldsText && CFG.worldsText[k]) || lines(CFG.worlds[k] || []);
+    const pw = parseWorld(txt);
+    if(pw.base.length){ WORLDS[k].base = pw.base; WORLDS[k].groups = pw.groups; }
+    CFG.worldsText[k] = txt;
+  });
+  TOUCH = CFG.touch; POOL = CFG.pool; TOPPINGS = CFG.toppings; TEA_BASE = CFG.teabase;
+  SMELL = CFG.smell.map((ans,i) => {
+    const others = Object.keys(ING).filter(n => n !== ans);
+    const picks = [];
+    while(picks.length < 3 && others.length){ picks.push(others.splice(Math.floor(Math.random()*others.length),1)[0]); }
+    const opts = [ans, ...picks].sort(() => Math.random()-.5);
+    return {n:i+1, ans, opts};
+  });
+  const mk = document.querySelector(".mark");
+  if(mk && CFG.img.logo && !mk.dataset.custom){
+    mk.dataset.custom = "1";
+    mk.innerHTML = `<img src="${CFG.img.logo}" alt="SAO CAFÉ" style="height:30px;width:auto;border-radius:6px">`;
+    bindAdminTap();
+  }
+  const f = document.querySelector("footer");
+  if(f) f.innerHTML = `บริษัท ไชยจันลา จำกัด · RANGSAN Academy · SAO Café · RANGSAN Coffee<br>
+    จองรอบถัดไป LINE ${esc(CFG.line)} · IG ${esc(CFG.ig)}`;
+}
+const lines = a => (a||[]).join("\n");
+const parseLines = s => String(s).split("\n").map(x => x.trim()).filter(Boolean);
+
+function openAdmin(){
+  const box = document.getElementById("adminBox");
+  box.innerHTML = `
+    <h3>ตั้งค่าสำหรับทีมงาน</h3>
+    <p class="sub">ใส่รหัสเพื่อแก้รายการวัตถุดิบและข้อมูลร้าน · ผู้เรียนเข้าหน้านี้ไม่ได้</p>
+    <label>รหัสผ่าน</label>
+    <input type="password" id="adPin" inputmode="numeric" placeholder="ใส่รหัส 4 หลัก">
+    <div class="adminrow">
+      <button class="save" id="adEnter">เข้าสู่การตั้งค่า</button>
+      <button class="close" id="adClose">ปิด</button>
+    </div>`;
+  document.getElementById("admin").classList.add("on");
+  document.getElementById("adClose").onclick = closeAdmin;
+  document.getElementById("adEnter").onclick = () => {
+    if(document.getElementById("adPin").value.trim() === CFG.pin) adminForm();
+    else document.getElementById("adPin").value = "";
+  };
+}
+function closeAdmin(){ document.getElementById("admin").classList.remove("on"); }
+function adminForm(){
+  const box = document.getElementById("adminBox");
+  box.innerHTML = `
+    <h3>ตั้งค่าสำหรับทีมงาน</h3>
+    <p class="sub">ใส่บรรทัดละ 1 รายการ · กดบันทึกแล้วมีผลทันทีกับเครื่องนี้</p>
+    <label>ขวดเกมทายกลิ่น 1–5 (เรียงตามที่วางบนโต๊ะ)</label>
+    <textarea id="adSmell">${esc(lines(CFG.smell))}</textarea>
+    <label>NT — Clear</label><textarea id="adNT">${esc(CFG.worldsText.NT||"")}</textarea>
+    <label>NF — Bloom</label><textarea id="adNF">${esc(CFG.worldsText.NF||"")}</textarea>
+    <label>SJ — Root</label><textarea id="adSJ">${esc(CFG.worldsText.SJ||"")}</textarea>
+    <label>SP — Spark</label><textarea id="adSP">${esc(CFG.worldsText.SP||"")}</textarea>
+    <p class="adminnote" style="margin:6px 0 0">แต่ละบ้านใส่บรรทัดละ 1 วัตถุดิบ หรือจะแบ่งกลุ่มย่อยก็พิมพ์ว่า <b>ชื่อกลุ่มย่อย: ของ1, ของ2</b> ได้ เช่น เครื่องเทศอุ่น: อบเชย, กานพลู</p>
+    <label>Personal touch</label><textarea id="adTouch">${esc(lines(CFG.touch))}</textarea>
+    <label>วงล้อกลิ่นบังคับ</label><textarea id="adPool">${esc(lines(CFG.pool))}</textarea>
+    <label>ท็อปปิ้งชา</label><textarea id="adTop">${esc(lines(CFG.toppings))}</textarea>
+    <label>ฐานชา</label><textarea id="adTea">${esc(lines(CFG.teabase))}</textarea>
+    <label>LINE</label><input id="adLine" value="${esc(CFG.line)}">
+    <label>Instagram</label><input id="adIG" value="${esc(CFG.ig)}">
+    <label>รูปกราฟิกของร้าน</label>
+    ${[["logo","โลโก้บนหัวแอป"],["cover","ภาพหน้าแรก (ใส่แล้วแทนหัวข้อความทั้งบล็อก)"],
+       ["includes","ภาพบล็อก 90 นาทีนี้คุณจะได้"],["pcbg","พื้นหลังโปสการ์ด (แนวตั้ง 1080×1900)"],["NT","NT — Clear"],["NF","NF — Bloom"],
+       ["SJ","SJ — Root"],["SP","SP — Spark"]].map(([k,lb]) => `
+      <div class="imgrow">
+        ${CFG.img[k] ? `<img src="${CFG.img[k]}" alt="">` : `<div class="none">ยังไม่มี</div>`}
+        <div style="flex:1;font-size:14px">${lb}</div>
+        <button data-pick="${k}">เลือกรูป</button>
+        ${CFG.img[k] ? `<button data-del="${k}">ลบ</button>` : ""}
+      </div>`).join("")}
+    ${allSubs().length ? `<label>รูปกลุ่มย่อยในแต่ละบ้าน</label>
+      ${allSubs().map(s => `
+        <div class="imgrow">
+          ${CFG.img[s.key] ? `<img src="${CFG.img[s.key]}" alt="">` : `<div class="none">ยังไม่มี</div>`}
+          <div style="flex:1;font-size:14px">${esc(s.code)} · ${esc(s.name)}</div>
+          <button data-pick="${esc(s.key)}">เลือกรูป</button>
+          ${CFG.img[s.key] ? `<button data-del="${esc(s.key)}">ลบ</button>` : ""}
+        </div>`).join("")}`
+      : `<p class="adminnote" style="margin-top:10px">ยังไม่มีกลุ่มย่อย — พิมพ์ <b>ชื่อกลุ่มย่อย: ของ1, ของ2</b> ในช่องบ้านด้านบน แล้วกดบันทึก ช่องใส่รูปของกลุ่มย่อยจะขึ้นตรงนี้</p>`}
+    <input type="file" id="adImgFile" accept="image/*" style="display:none">
+    <label>เปลี่ยนรหัสผ่าน</label><input id="adNewPin" value="${esc(CFG.pin)}">
+    <div class="adminrow">
+      <button class="save" id="adSave">บันทึก</button>
+      <button class="close" id="adClose2">ปิด</button>
+    </div>
+    <div class="adminrow"><button class="reset" id="adReset">คืนค่าเริ่มต้นทั้งหมด</button></div>
+    <p class="adminnote">ค่าที่บันทึกอยู่ในเครื่องนี้เครื่องเดียว ถ้าเปิดจากมือถืออีกเครื่องต้องตั้งใหม่ · ชื่อวัตถุดิบต้องสะกดตรงกับรายการ 30 ตัวของร้าน ไอคอนกับสีถึงจะขึ้นถูกกลุ่ม</p>`;
+  document.getElementById("adClose2").onclick = closeAdmin;
+  const imgFile = document.getElementById("adImgFile");
+  let pickKey = "";
+  box.querySelectorAll("[data-pick]").forEach(b => b.onclick = () => {
+    pickKey = b.dataset.pick; imgFile.value = ""; imgFile.click();
+  });
+  box.querySelectorAll("[data-del]").forEach(b => b.onclick = () => {
+    CFG.img[b.dataset.del] = ""; saveCFG(); applyCFG(); adminForm();
+  });
+  imgFile.onchange = async () => {
+    const f = imgFile.files && imgFile.files[0];
+    if(!f || !pickKey) return;
+    const note = box.querySelector(".adminnote");
+    note.textContent = "กำลังย่อรูป รอสักครู่";
+    try{
+      CFG.img[pickKey] = await fileToDataURL(f, pickKey === "logo" ? 300 : (pickKey === "cover" || pickKey === "includes" || pickKey === "pcbg") ? 1080 : (pickKey.includes("::") ? 420 : 900));
+      const ok = saveCFG(); applyCFG(); adminForm();
+      const n2 = box.querySelector(".adminnote");
+      n2.textContent = ok ? "ใส่รูปแล้ว" : "รูปใหญ่เกินกว่าที่เครื่องเก็บได้ ลองใช้รูปเล็กลง";
+    }catch(e){ note.textContent = "อ่านไฟล์รูปไม่สำเร็จ ลองไฟล์อื่น"; }
+  };
+  document.getElementById("adReset").onclick = () => {
+    CFG = JSON.parse(JSON.stringify(DEFAULTS)); saveCFG(); applyCFG(); adminForm();
+  };
+  document.getElementById("adSave").onclick = () => {
+    const g = id => document.getElementById(id).value;
+    CFG.smell = parseLines(g("adSmell")).slice(0,5);
+    CFG.worldsText = {NT:g("adNT"), NF:g("adNF"), SJ:g("adSJ"), SP:g("adSP")};
+    CFG.worlds = {NT:parseWorld(g("adNT")).base, NF:parseWorld(g("adNF")).base,
+                  SJ:parseWorld(g("adSJ")).base, SP:parseWorld(g("adSP")).base};
+    CFG.touch = parseLines(g("adTouch"));
+    CFG.pool = parseLines(g("adPool"));
+    CFG.toppings = parseLines(g("adTop"));
+    CFG.teabase = parseLines(g("adTea"));
+    CFG.line = g("adLine").trim() || DEFAULTS.line;
+    CFG.ig = g("adIG").trim() || DEFAULTS.ig;
+    CFG.pin = g("adNewPin").trim() || DEFAULTS.pin;
+    const ok = saveCFG(); applyCFG();
+    const note = box.querySelector(".adminnote");
+    note.textContent = ok ? "บันทึกแล้ว ใช้ได้กับรอบถัดไปทันที"
+                          : "บันทึกถาวรไม่ได้ในเบราว์เซอร์นี้ ค่าจะใช้ได้จนกว่าจะปิดแท็บ";
+  };
+}
+/* แตะโลโก้ 5 ครั้งติดกันเพื่อเข้าหน้าตั้งค่า */
+let tapN = 0, tapT = 0;
+function bindAdminTap(){
+  const m = document.querySelector(".mark");
+  if(!m) return;
+  m.style.cursor = "pointer";
+  m.onclick = () => {
+    const now = Date.now();
+    tapN = (now - tapT < 900) ? tapN+1 : 1;
+    tapT = now;
+    if(tapN >= 5){ tapN = 0; openAdmin(); }
+  };
+}
+
+const S = {name:"",qi:0,ans:[],counts:null,photoFile:null,photoURL:"",type:"",picks:[],touch:"",forced:"",rerolled:false,
+           smellI:0,smellScore:0,scent:"",tea:"",sweet:"",top:"",serial:"",screen:0};
+const SCREENS = ["start","quiz","world","build","roulette","name","smell","tea","card"];
+const app = document.getElementById("app");
+const barEl = document.getElementById("bar"), cta = document.getElementById("cta");
+const esc = s => String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const pick = a => a[Math.floor(Math.random()*a.length)];
+const pad = n => String(n).padStart(2,"0");
+
+function worldOf(t){
+  if(t[1]==="N") return t[2]==="T" ? WORLDS.NT : WORLDS.NF;
+  return t[3]==="J" ? WORLDS.SJ : WORLDS.SP;
+}
+function paint(w){
+  const r = document.documentElement.style;
+  r.setProperty("--world", w ? w.color : "#1E7A3D");
+  r.setProperty("--world-t", w ? w.tint : "#E4EBDB");
+  r.setProperty("--world-d", w ? w.deep : "#1B4D2C");
+}
+function bar(label, fn, disabled){
+  if(!label){ barEl.classList.add("hidden"); return; }
+  barEl.classList.remove("hidden");
+  cta.textContent = label; cta.disabled = !!disabled; cta.onclick = fn;
+}
+function go(name){ S.screen = SCREENS.indexOf(name); render(); window.scrollTo(0,0); }
+function optRow(v,pressed){
+  return `<button class="opt" aria-pressed="${pressed?"true":"false"}" data-v="${esc(v)}">
+    ${icon(v)}<span class="txt">${esc(v)}</span></button>`;
+}
+function render(){
+  document.getElementById("fill").style.width = (S.screen/(SCREENS.length-1)*100)+"%";
+  document.getElementById("count").innerHTML =
+    S.screen===0 ? "start" : "<b>"+pad(S.screen)+"</b>of "+pad(SCREENS.length-1);
+  ({start:vStart,quiz:vQuiz,world:vWorld,build:vBuild,roulette:vRoulette,
+    name:vName,smell:vSmell,tea:vTea,card:vCard})[SCREENS[S.screen]]();
+}
+
+function vStart(){
+  paint(null);
+  app.innerHTML = `
+    ${CFG.img.cover
+      ? `<img class="coverfull" src="${CFG.img.cover}" alt="Brew Your Type">`
+      : `<div class="band">
+          <span class="stamp">90 min · 6 seats</span>
+          ${art("d-jar",150,"art","right:-18px;bottom:-30px")}
+          <div class="in">
+            <div class="kicker">Scent &amp; Thai Tea Lab</div>
+            <h1>กลิ่นของคุณ<br>หน้าตาเป็นแบบไหน</h1>
+            <p>16 บุคลิกภาพ · 1 กลิ่นเฉพาะตัว · 1 แก้วในแบบของคุณ</p>
+          </div>
+        </div>`}
+    <span class="tag">เริ่มจากชื่อของคุณ</span>
+    <input id="nm" type="text" placeholder="ชื่อเล่นของคุณ" autocomplete="off" aria-label="ชื่อเล่นของคุณ">
+    ${CFG.img.includes
+      ? `<img class="coverfull" src="${CFG.img.includes}" alt="สิ่งที่คุณจะได้">`
+      : `<div class="card">${art("d-lav",110,"corner","color:var(--sage)")}
+          <h3>90 นาทีนี้คุณจะได้</h3>
+          <div class="rows">
+            <div><span>${icon("ลาเวนเดอร์",20)}ยาดม</span><span>สมุนไพรสูตรเฉพาะตัว 1 ชิ้น</span></div>
+            <div><span>${icon("เปลือกส้ม",20)}ชาไทย</span><span>สูตรของคุณเอง 1 แก้ว</span></div>
+            <div><span>${icon("โกโก้นิบ",20)}กลับบ้าน</span><span>การ์ดบันทึกสูตร + คู่มือ</span></div>
+          </div>
+        </div>`}
+    <div class="divider">6 กลุ่มกลิ่นของร้าน</div>
+    <div class="legend">${Object.values(CAT).map(c=>
+      `<span><i style="background:${c.c}"></i>${c.l}</span>`).join("")}</div>
+    <p class="note">สีและไอคอนชุดนี้ใช้ตลอดทั้งแอป ให้ตรงกับป้ายบนโต๊ะสมุนไพร · แจ้งทีมงานก่อนเริ่มหากแพ้สมุนไพรหรือน้ำมันหอมระเหย</p>`;
+  const inp = document.getElementById("nm");
+  const start = () => { S.name = inp.value.trim() || "คุณ"; S.qi=0; S.ans=[]; go("quiz"); };
+  bar("เริ่มคลาส", start);
+  inp.addEventListener("keydown", e => { if(e.key==="Enter") start(); });
+}
+
+function vQuiz(){
+  const q = Q[S.qi];
+  app.innerHTML = `
+    <span class="tag">What's your type · ${pad(S.qi+1)} / ${pad(Q.length)}</span>
+    <h2>${esc(q.t)}</h2>
+    <p class="lead">ตอบตามที่เป็นจริง ไม่ต้องคิดนาน</p>
+    ${q.o.map((o,i)=>`<button class="opt" data-i="${i}"><span class="txt">${esc(o[2])}</span><span class="tick"></span></button>`).join("")}
+    ${S.qi>0?'<button class="link" id="back">ย้อนกลับ</button>':""}
+    <div class="divider">ตอบครบ ${Q.length} ข้อแล้วรู้กลุ่มกลิ่นทันที</div>`;
+  bar(null);
+  app.querySelectorAll(".opt").forEach(b => b.onclick = () => {
+    S.ans[S.qi] = [q.o[+b.dataset.i][0], q.o[+b.dataset.i][1]];
+    b.setAttribute("aria-pressed","true");
+    setTimeout(() => {
+      if(S.qi < Q.length-1){ S.qi++; render(); }
+      else { S.type = tally(); S.picks=[]; S.touch=""; S.forced=""; S.rerolled=false; go("world"); }
+    }, 150);
+  });
+  const bk = document.getElementById("back");
+  if(bk) bk.onclick = () => { S.qi--; render(); };
+}
+function tally(){
+  const c = {E:0,I:0,S:0,N:0,T:0,F:0,J:0,P:0};
+  S.ans.forEach(a => { if(a) c[a[0]] += a[1]; });
+  S.counts = c;
+  return (c.E>=c.I?"E":"I")+(c.S>=c.N?"S":"N")+(c.T>=c.F?"T":"F")+(c.J>=c.P?"J":"P");
+}
+
+const CHAR_PARTS = (a,b,skin,hair,prop) => `
+  <polygon points="44,42 46,22 60,13 74,22 76,42 70,34 60,30 50,34" fill="${hair}"/>
+  <polygon points="50,26 70,26 73,44 60,53 47,44" fill="${skin}"/>
+  <polygon points="60,26 70,26 73,44 60,53" fill="${skin}" opacity=".86"/>
+  <polygon points="48,30 60,19 72,30 65,31 60,27 55,31" fill="${hair}"/>
+  <circle cx="55" cy="37" r="2.3" fill="#3C3A33"/><circle cx="66" cy="37" r="2.3" fill="#3C3A33"/>
+  <path d="M56 45c3 2.6 6 2.6 9 0" stroke="#3C3A33" stroke-width="1.7" fill="none" stroke-linecap="round"/>
+  <rect x="55" y="50" width="11" height="9" fill="${skin}" opacity=".8"/>
+  <polygon points="40,58 80,58 86,113 34,113" fill="${a}"/>
+  <polygon points="60,58 80,58 86,113 60,113" fill="${b}"/>
+  <polygon points="40,60 32,88 40,91 48,65" fill="${b}"/>
+  <polygon points="80,60 90,86 82,90 72,65" fill="${a}"/>
+  <circle cx="36" cy="93" r="5" fill="${skin}"/><circle cx="86" cy="92" r="5" fill="${skin}"/>
+  <polygon points="38,113 57,113 55,166 41,166" fill="${b}"/>
+  <polygon points="63,113 82,113 79,166 65,166" fill="${a}"/>
+  <rect x="35" y="163" width="23" height="9" rx="4" fill="#3C3A33"/>
+  <rect x="62" y="163" width="23" height="9" rx="4" fill="#3C3A33"/>
+  ${prop}`;
+const CHARS = {
+  NT: CHAR_PARTS("#C9CBD6","#9AA0B2","#EBCDB2","#6B5A8E",
+    `<rect x="88" y="66" width="24" height="30" rx="3" fill="#F7F4EC" stroke="#6B5A8E" stroke-width="2"/>
+     <path d="M93 75h14M93 83h10" stroke="#6B5A8E" stroke-width="2" stroke-linecap="round"/>
+     <path d="M50 36h11M59 36h11" stroke="#6B5A8E" stroke-width="1.6" fill="none"/>
+     <circle cx="55" cy="37" r="4.6" fill="none" stroke="#6B5A8E" stroke-width="1.6"/>
+     <circle cx="66" cy="37" r="4.6" fill="none" stroke="#6B5A8E" stroke-width="1.6"/>`),
+  NF: CHAR_PARTS("#8FB06A","#5F7F42","#EBCDB2","#D8D3C4",
+    `<path d="M36 90V66" stroke="#5F7F42" stroke-width="3" stroke-linecap="round"/>
+     <path d="M36 78c-7 0-10-4-11-9 6-1 10 3 11 9z" fill="#5F7F42"/>
+     <circle cx="36" cy="60" r="8.5" fill="#E2A9BC"/>
+     <circle cx="36" cy="60" r="3.4" fill="#FBEBBF"/>`),
+  SJ: CHAR_PARTS("#5BA9AE","#2F7C82","#EBCDB2","#4A4740",
+    `<rect x="86" y="68" width="26" height="32" rx="3" fill="#F7F4EC" stroke="#2F7C82" stroke-width="2"/>
+     <path d="M91 78h17M91 86h13M91 94h9" stroke="#2F7C82" stroke-width="2" stroke-linecap="round"/>
+     <rect x="43" y="24" width="34" height="5" rx="2.5" fill="#4A4740"/>`),
+  SP: CHAR_PARTS("#E2B94E","#B98C29","#EBCDB2","#C9973A",
+    `<polygon points="60,4 82,26 38,26" fill="#C9973A"/>
+     <rect x="20" y="62" width="18" height="26" rx="5" fill="#B98C29"/>
+     <path d="M38 68h5" stroke="#B98C29" stroke-width="3" stroke-linecap="round"/>
+     <circle cx="94" cy="92" r="10" fill="#F7F4EC" stroke="#B98C29" stroke-width="2"/>
+     <circle cx="90" cy="89" r="2.4" fill="#E2A9BC"/><circle cx="98" cy="94" r="2.4" fill="#8FB06A"/>`)
+};
+function charSVG(code, w){
+  return `<svg viewBox="0 0 120 180" width="${w}" height="${w*1.5}" aria-hidden="true">${CHARS[code]||""}</svg>`;
+}
+function charDataURL(code){
+  return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 180">${CHARS[code]||""}</svg>`);
+}
+
+const TYPES = {
+  INTJ:{n:"นักวางแผน",t:["ระบบชัด","คิดล่วงหน้า","อิสระ"],
+        d:"มองไปข้างหน้าหลายก้าวเสมอ ชอบอะไรที่มีโครงสร้างและอธิบายได้",
+        s:"มักเลือกกลิ่นไม่กี่ตัวแต่จบสวย ไม่ชอบใส่มั่ว"},
+  INTP:{n:"นักคิดเชิงตรรกะ",t:["สงสัย","ทดลอง","ยืดหยุ่น"],
+        d:"สนุกกับการตั้งคำถามและหาคำตอบเอง มากกว่าทำตามที่บอก",
+        s:"ชอบลองผสมคู่แปลก ๆ ดูว่าจะออกมาเป็นยังไง"},
+  ENTJ:{n:"ผู้นำ",t:["เป้าหมายชัด","ตัดสินใจไว","มั่นใจ"],
+        d:"เห็นภาพปลายทางก่อนแล้วค่อยไล่ย้อนมาว่าต้องทำอะไรบ้าง",
+        s:"เลือกเร็ว ไม่ลังเล มักเสร็จก่อนเพื่อนในโต๊ะ"},
+  ENTP:{n:"นักโต้แย้ง",t:["ไอเดียพุ่ง","เบื่อง่าย","ชอบท้าทาย"],
+        d:"สนุกกับการเถียงเล่นและหาทางที่ยังไม่มีใครลอง",
+        s:"เป็นคนที่ขอหมุนวงล้อใหม่บ่อยที่สุด เพราะอยากลุ้นของใหม่"},
+  INFJ:{n:"ผู้ให้คำปรึกษา",t:["ลึกซึ้ง","อ่านคนเก่ง","มีอุดมคติ"],
+        d:"เงียบแต่คิดเยอะ และมักรู้ว่าคนตรงหน้ากำลังรู้สึกอะไร",
+        s:"เลือกกลิ่นที่มีความหมายกับตัวเอง มากกว่ากลิ่นที่หอมที่สุด"},
+  INFP:{n:"ผู้ไกล่เกลี่ย",t:["อ่อนโยน","มีโลกส่วนตัว","ซื่อกับความรู้สึก"],
+        d:"ให้ค่ากับความรู้สึกและความหมายมากกว่ากฎเกณฑ์",
+        s:"มักตั้งชื่อกลิ่นได้กินใจที่สุดในรอบนั้น"},
+  ENFJ:{n:"ผู้ให้แรงบันดาลใจ",t:["อบอุ่น","ดูแลคน","ชวนเก่ง"],
+        d:"ทำให้คนรอบตัวรู้สึกดีขึ้นได้โดยไม่ต้องพยายาม",
+        s:"มักช่วยเพื่อนเลือกกลิ่นเสร็จก่อนจะเลือกของตัวเอง"},
+  ENFP:{n:"นักรณรงค์",t:["สดใส","ไอเดียเยอะ","อินง่าย"],
+        d:"ตื่นเต้นกับสิ่งใหม่ได้เสมอ และดึงคนอื่นให้อินตามได้",
+        s:"อยากใส่ทุกกลิ่นที่ชอบ ต้องมีคนเบรกสักหน่อย"},
+  ISTJ:{n:"นักปฏิบัติ",t:["มีวินัย","เชื่อถือได้","ทำตามแผน"],
+        d:"พูดแล้วทำ และทำให้เสร็จตามที่รับปากเสมอ",
+        s:"ชั่งสัดส่วนเป๊ะตามสูตร ได้กลิ่นที่นิ่งและสม่ำเสมอ"},
+  ISFJ:{n:"ผู้พิทักษ์",t:["ใส่ใจ","อ่อนน้อม","จำรายละเอียด"],
+        d:"สังเกตเรื่องเล็ก ๆ ที่คนอื่นมองข้าม แล้วเก็บมาดูแล",
+        s:"เลือกกลิ่นที่คุ้นเคยและอบอุ่น กลิ่นที่นึกถึงบ้าน"},
+  ESTJ:{n:"ผู้บริหาร",t:["จัดการเก่ง","ตรงไปตรงมา","ลงมือจริง"],
+        d:"เห็นงานกองอยู่แล้วอยู่เฉยไม่ได้ ต้องจัดให้เข้าที่",
+        s:"ทำตามขั้นตอนครบและมักเสร็จก่อนเวลา"},
+  ESFJ:{n:"ผู้ประสานงาน",t:["เป็นมิตร","ดูแลบรรยากาศ","ใจกว้าง"],
+        d:"เป็นกาวใจของกลุ่ม รู้ว่าใครยังไม่กล้าคุยกับใคร",
+        s:"ชอบชวนคนอื่นมาดมของตัวเองและขอดมของเพื่อน"},
+  ISTP:{n:"นักแก้ปัญหา",t:["มือเย็น","ลงมือเลย","ไม่พูดเยอะ"],
+        d:"เรียนรู้จากการจับของจริงมากกว่าฟังคำอธิบายยาว ๆ",
+        s:"สนใจอุปกรณ์และวิธีบดมากกว่าทฤษฎีเรื่องกลิ่น"},
+  ISFP:{n:"ศิลปิน",t:["ละเมียด","มีสุนทรียะ","ตามใจตัวเอง"],
+        d:"รับรู้ความสวยงามได้ไวและอยากทำของออกมาให้ถูกใจตัวเอง",
+        s:"แต่งกระปุกกับจัดวางผลงานออกมาสวยที่สุดในโต๊ะ"},
+  ESTP:{n:"นักผจญภัย",t:["พลังเยอะ","ลองก่อน","อยู่กับปัจจุบัน"],
+        d:"ตัดสินใจไวและไม่กลัวผลลัพธ์ที่ยังไม่รู้",
+        s:"หมุนวงล้อแล้วรับได้ทุกผล ไม่ค่อยขอหมุนใหม่"},
+  ESFP:{n:"นักแสดง",t:["สนุก","เป็นจุดสนใจ","ใจดี"],
+        d:"ทำให้บรรยากาศครึกครื้นได้ทันทีที่เดินเข้ามา",
+        s:"ถ่ายรูปเยอะที่สุดในรอบ และชวนทั้งโต๊ะถ่ายด้วย"}
+};
+const AXES = [["E","I"],["S","N"],["T","F"],["J","P"]];
+function axisCard(){
+  const c = S.counts || {};
+  return AXES.map(([a,b]) => {
+    const ca = c[a]||0, cb = c[b]||0, tot = ca+cb || 1;
+    const win = ca>=cb ? a : b, pct = Math.round(Math.max(ca,cb)/tot*100);
+    return `<div><b>${a} / ${b}</b><u><i style="width:${pct}%"></i></u>
+      <span style="flex:none;width:64px;text-align:left">${win} ${pct}%</span></div>`;
+  }).join("");
+}
+
+function vWorld(){
+  const w = worldOf(S.type); paint(w);
+  app.innerHTML = `
+    <div class="band">
+      <span class="stamp">One scent, your world</span>
+      ${CFG.img[w.code] ? `<img class="bandimg" src="${CFG.img[w.code]}" alt="">`
+                        : art(w.art,170,"art","right:-26px;bottom:-40px")}
+      <div class="in">
+        <div class="kicker">Your scent world</div>
+        <h1>${esc(S.type)}</h1>
+        <p>${esc(w.code)} — ${esc(w.title)} · ${esc(w.who)}</p>
+      </div>
+    </div>
+    <div class="card tinted">
+      ${CFG.img[w.code] ? `<img class="cornimg" src="${CFG.img[w.code]}" alt="">`
+                        : `<div style="position:absolute;right:14px;bottom:6px;opacity:.95">${charSVG(w.code,86)}</div>`}
+      <h3>${esc(S.type)} · ${esc((TYPES[S.type]||{}).n||"")}</h3>
+      <p class="sub">${((TYPES[S.type]||{}).t||[]).join(" · ")}</p>
+      <div class="rows">
+        <div><span>นิสัยเด่น</span><span>${esc((TYPES[S.type]||{}).d||"")}</span></div>
+        <div><span>ตอนเลือกกลิ่น</span><span style="max-width:66%">${esc((TYPES[S.type]||{}).s||"")}</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>บุคลิกกลิ่นของคุณ</h3>
+      <p class="sub">${esc(w.mood)}</p>
+      <div class="meter">${w.meter.map(m=>
+        `<div><b>${esc(m[0])}</b><u><i style="width:${m[1]}%"></i></u></div>`).join("")}</div>
+    </div>
+    <div class="divider">ความชัดของแต่ละด้าน</div>
+    <div class="card">
+      <div class="meter">${axisCard()}</div>
+      <p class="sub" style="margin-top:12px">ยิ่งเปอร์เซ็นต์สูง แปลว่าคำตอบของคุณเอนไปทางด้านนั้นชัดเจน ถ้าใกล้ 50% แปลว่าอยู่กลาง ๆ เลือกกลิ่นจากอีกโลกได้ตามชอบ</p>
+    </div>
+    <div class="divider">สมุนไพรประจำโลกกลิ่น</div>
+    <div class="card">
+      <div class="rows">${w.base.map(b=>
+        `<div><span>${icon(b,20)}${esc(cat(b).l)}</span><span>${esc(b)}</span></div>`).join("")}</div>
+    </div>
+    <p class="note">แบบวัด 20 ข้อนี้อ้างอิงโครงสร้าง OEJTS (Open Extended Jungian Type Scales) ซึ่งเป็นแบบวัดสาธารณะที่ใช้กันแพร่หลาย ไม่ใช่ MBTI ฉบับลิขสิทธิ์ · MBTI is a starting point, not a rule</p>`;
+  bar("ไปเลือกวัตถุดิบ", () => go("build"));
+}
+
+function vBuild(){
+  const w = worldOf(S.type); paint(w);
+  app.innerHTML = `
+    <span class="tag world">Build your scent</span>
+    <h2>เลือกวัตถุดิบของคุณ</h2>
+    <p class="lead">หยิบกลิ่นฐาน 2 อย่างจากโลก ${esc(w.title)} แล้วเติมกลิ่นที่ชอบเองอีก 1 อย่าง</p>
+    <span class="tag plain">กลิ่นฐาน — เลือก 2</span>
+    <div id="base">${(w.groups && w.groups.length ? w.groups : [{name:"",items:w.base}]).map(gp => `
+      ${gp.name ? `<div style="display:flex;align-items:center;gap:9px;margin:14px 0 2px">
+          ${CFG.img[subKey(w.code,gp.name)] ? `<img src="${CFG.img[subKey(w.code,gp.name)]}" alt=""
+             style="width:38px;height:38px;object-fit:cover;border-radius:9px;border:1px solid var(--line)">` : ""}
+          <span class="sub" style="font-weight:600;color:var(--world)">${esc(gp.name)}</span>
+        </div>` : ""}
+      <div class="grid2">${gp.items.map(b => optRow(b, S.picks.includes(b))).join("")}</div>`).join("")}</div>
+    <span class="tag plain">Personal touch — เลือก 1</span>
+    <div class="grid2" id="touch">${TOUCH.map(b=>optRow(b, S.touch===b)).join("")}</div>
+    <div class="divider">Modifier bar</div>
+    <div class="card">${art("d-lav",100,"corner","color:var(--world)")}
+      <div class="rows">${S.type.split("").map(l=>
+        `<div><span>${l}</span><span>${esc(MOD[l].note)}</span></div>`).join("")}</div>
+      <p class="sub" style="margin-top:12px">หยิบเพิ่มได้ตามชอบ ไม่ต้องใส่ครบทุกตัว</p>
+    </div>`;
+  const check = () => { cta.disabled = !(S.picks.length===2 && S.touch); };
+  bar("ต่อไปหมุนวงล้อ", () => { S.forced=""; S.rerolled=false; go("roulette"); }, true);
+  app.querySelectorAll("#base .opt").forEach(b => b.onclick = () => {
+    const v = b.dataset.v, i = S.picks.indexOf(v);
+    if(i>-1) S.picks.splice(i,1);
+    else { if(S.picks.length===2) return; S.picks.push(v); }
+    b.setAttribute("aria-pressed", i>-1 ? "false":"true");
+    check();
+  });
+  app.querySelectorAll("#touch .opt").forEach(b => b.onclick = () => {
+    S.touch = b.dataset.v;
+    app.querySelectorAll("#touch .opt").forEach(o => o.setAttribute("aria-pressed", o===b?"true":"false"));
+    check();
+  });
+  check();
+}
+
+const TEA_COLORS = ["#7A4A1E","#C77E92","#6E8B5A","#D3822B","#A99BC8","#C9A24A"];
+let wheelAngle = 0;
+
+function polar(r, deg){
+  const a = (deg-90) * Math.PI/180;
+  return [100 + r*Math.cos(a), 100 + r*Math.sin(a)];
+}
+function wheelHTML(items, colors){
+  const n = items.length, seg = 360/n;
+  const sectors = items.map((it,i) => {
+    const c = colors ? colors[i%colors.length] : cat(it).c;
+    const [x1,y1] = polar(92, i*seg), [x2,y2] = polar(92, (i+1)*seg);
+    const mid = i*seg + seg/2, [lx,ly] = polar(60, mid);
+    const fs = it.length > 10 ? 7.4 : it.length > 7 ? 8.4 : 9.6;
+    return `<path d="M100 100 L${x1.toFixed(1)} ${y1.toFixed(1)} A92 92 0 0 1 ${x2.toFixed(1)} ${y2.toFixed(1)} Z"
+      fill="${c}" stroke="#FFFDF6" stroke-width="1.5"/>
+      <text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" fill="#FFFDF6" font-size="${fs}"
+        text-anchor="middle" dominant-baseline="middle" class="hubtxt"
+        transform="rotate(${mid.toFixed(1)} ${lx.toFixed(1)} ${ly.toFixed(1)})">${esc(it)}</text>`;
+  }).join("");
+  return `<div class="wheelwrap" id="wheelwrap">
+    <svg class="pointer" width="30" height="26" viewBox="0 0 30 26" aria-hidden="true">
+      <path d="M15 25 L3 3 A1 1 0 0 1 27 3 Z" fill="var(--world)" stroke="#FFFDF6" stroke-width="2"/>
+    </svg>
+    <svg class="wheel" viewBox="0 0 200 200" role="img" aria-label="วงล้อสุ่ม">
+      <circle cx="100" cy="100" r="96" fill="#FFFDF6" stroke="var(--line-2)" stroke-width="2"/>
+      <g id="wheelG">${sectors}</g>
+      <circle cx="100" cy="100" r="17" fill="#FFFDF6" stroke="var(--world)" stroke-width="2.5"/>
+      <circle cx="100" cy="100" r="6" fill="var(--world)"/>
+    </svg>
+  </div>
+  <div class="result" id="result"></div>`;
+}
+function spinWheel(items, done){
+  const g = document.getElementById("wheelG");
+  const res = document.getElementById("result");
+  const wrap = document.getElementById("wheelwrap");
+  const n = items.length, seg = 360/n;
+  const idx = Math.floor(Math.random()*n);
+  const target = 360*5 + (360 - (idx*seg + seg/2));
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  res.innerHTML = "";
+  wheelAngle += target;
+  if(reduced){
+    wrap.classList.add("fast");
+    g.style.transform = `rotate(${wheelAngle}deg)`;
+    finish();
+    return;
+  }
+  wrap.classList.remove("fast");
+  requestAnimationFrame(() => { g.style.transform = `rotate(${wheelAngle}deg)`; });
+  let called = false;
+  const finishOnce = () => { if(!called){ called = true; finish(); } };
+  g.addEventListener("transitionend", finishOnce, {once:true});
+  setTimeout(finishOnce, 4600);
+  function finish(){
+    const v = items[idx];
+    res.innerHTML = `${esc(v)}<small>วงล้อเลือกให้แล้ว</small>`;
+    res.style.color = "var(--world)";
+    done(v);
+  }
+}
+
+function vRoulette(){
+  app.innerHTML = `
+    <span class="tag world">Modifier roulette</span>
+    <h2>วงล้อกลิ่นบังคับ</h2>
+    <p class="lead">หมุนได้กลิ่นไหน ให้เติมเพิ่มอีก 1 หยิบมือ ถ้าไม่ถูกใจ ขอหมุนใหม่ได้ 1 ครั้ง</p>
+    ${wheelHTML(POOL)}
+    <button class="link" id="spin">${S.forced ? (S.rerolled ? "หมุนครบแล้ว" : "หมุนใหม่อีกครั้ง") : "หมุนวงล้อ"}</button>
+    <div class="divider">ลุ้นกันทั้งโต๊ะ</div>
+    <p class="note">กติกาคือได้อะไรต้องใส่อันนั้น ความบังเอิญนี่แหละที่ทำให้ได้กลิ่นที่ไม่มีใครเหมือน</p>`;
+  bar("ใช้กลิ่นนี้ ไปตั้งชื่อ", () => go("name"), !S.forced);
+  const spin = document.getElementById("spin");
+  if(S.forced) document.getElementById("result").innerHTML = esc(S.forced)+"<small>วงล้อเลือกให้แล้ว</small>";
+  spin.onclick = () => {
+    if(S.forced && S.rerolled) return;
+    if(S.forced) S.rerolled = true;
+    spin.disabled = true;
+    cta.disabled = true;
+    spinWheel(POOL, v => {
+      S.forced = v;
+      spin.disabled = S.rerolled;
+      spin.textContent = S.rerolled ? "หมุนครบแล้ว" : "หมุนใหม่อีกครั้ง";
+      cta.disabled = false;
+    });
+  };
+}
+
+function vName(){
+  const w = worldOf(S.type);
+  app.innerHTML = `
+    <span class="tag world">Name your scent</span>
+    <h2>ตั้งชื่อกลิ่นของคุณ</h2>
+    <p class="lead">ชื่อนี้จะไปอยู่บนฉลากหลอดยาดม และส่งเข้าโหวตชื่อที่ดีที่สุดของรอบนี้</p>
+    <input id="sc" type="text" placeholder="เช่น ${esc(w.names[0])}" value="${esc(S.scent)}" autocomplete="off" aria-label="ชื่อกลิ่นของคุณ">
+    <span class="tag plain">หรือกดใช้ชื่อที่แนะนำ</span>
+    <div>${w.names.map(n=>`<button class="chip" data-n="${esc(n)}">${esc(n)}</button>`).join("")}</div>
+    <div class="card tinted">
+      <h3>สูตรของคุณตอนนี้</h3>
+      <div class="rows">
+        <div><span>${icon(S.picks[0],20)}กลิ่นฐาน</span><span>${S.picks.map(esc).join(" · ")}</span></div>
+        <div><span>${icon(S.touch,20)}เติมเอง</span><span>${esc(S.touch)}</span></div>
+        <div><span>${icon(S.forced,20)}วงล้อ</span><span>${esc(S.forced)}</span></div>
+      </div>
+    </div>`;
+  const inp = document.getElementById("sc");
+  app.querySelectorAll(".chip").forEach(p => p.onclick = () => { inp.value = p.dataset.n; inp.focus(); });
+  bar("บันทึกชื่อ แล้วไปเล่นเกม", () => {
+    S.scent = inp.value.trim() || "กลิ่นไม่มีชื่อ";
+    S.smellI = 0; S.smellScore = 0; go("smell");
+  });
+}
+
+function vSmell(){
+  const q = SMELL[S.smellI];
+  app.innerHTML = `
+    <span class="tag">Blind smell test · ${pad(S.smellI+1)} / ${pad(SMELL.length)}</span>
+    <h2>ขวดหมายเลข ${q.n} คือกลิ่นอะไร</h2>
+    <p class="lead">ดมขวดบนโต๊ะแล้วเลือกคำตอบ ตอบแล้วเฉลยทันที</p>
+    ${q.opts.map(o=>`<button class="opt" data-o="${esc(o)}">${icon(o)}<span class="txt">${esc(o)}</span><span class="tick"></span></button>`).join("")}
+    <div class="divider">ทายถูก 4 ข้อขึ้นไป มีรางวัล</div>`;
+  bar(null);
+  app.querySelectorAll(".opt").forEach(b => b.onclick = () => {
+    if(b.dataset.o === q.ans) S.smellScore++;
+    app.querySelectorAll(".opt").forEach(o => {
+      o.disabled = true;
+      if(o.dataset.o === q.ans) o.classList.add("right");
+      else if(o === b) o.classList.add("wrong");
+    });
+    bar(S.smellI < SMELL.length-1 ? "ข้อต่อไป" : "ดูคะแนนรวม", () => {
+      if(S.smellI < SMELL.length-1){ S.smellI++; render(); } else showScore();
+    });
+  });
+}
+function showScore(){
+  const msg = S.smellScore>=4 ? "จมูกดีมาก ทีมงานขอคารวะ"
+            : S.smellScore>=2 ? "ใช้ได้เลย อีกนิดเดียวก็ครบ"
+            : "ไม่เป็นไร สมุนไพรแห้งหลอกจมูกเก่ง";
+  app.innerHTML = `
+    <div class="band">
+      ${art("d-lav",150,"art","right:-20px;bottom:-34px")}
+      <div class="in">
+        <div class="kicker">ผลเกมทายกลิ่น</div>
+        <h1>${S.smellScore} / ${SMELL.length}</h1>
+        <p>${esc(msg)}</p>
+      </div>
+    </div>
+    <div class="card">
+      <h3>เฉลยทั้งหมด</h3>
+      <div class="rows">${SMELL.map(s=>
+        `<div><span>${icon(s.ans,20)}ขวด ${s.n}</span><span>${esc(s.ans)}</span></div>`).join("")}</div>
+    </div>
+    <p class="note">ได้ 4 ขึ้นไป แจ้งทีมงานเพื่อรับท็อปปิ้งชาฟรี 1 อย่าง</p>`;
+  bar("ไปช่วงชาไทย", () => go("tea"));
+  window.scrollTo(0,0);
+}
+
+function vTea(){
+  app.innerHTML = `
+    <div class="band">
+      ${art("d-glass",150,"art","right:-14px;bottom:-32px")}
+      <div class="in">
+        <div class="kicker">Brew your blend</div>
+        <h2>ชาไทยของคุณ</h2>
+        <p>เลือกฐานชาและความหวาน แล้วหมุนท็อปปิ้งบังคับ 1 อย่าง</p>
+      </div>
+    </div>
+    <span class="tag plain">Tea base profile</span>
+    <div class="grid2" id="base">${TEA_BASE.map(t=>
+      `<button class="opt" aria-pressed="${S.tea===t}" data-v="${esc(t)}"><span class="txt">${esc(t)}</span></button>`).join("")}</div>
+    <span class="tag plain">ความหวาน</span>
+    <div class="grid2" id="sweet">${SWEET.map(t=>
+      `<button class="opt" aria-pressed="${S.sweet===t}" data-v="${esc(t)}"><span class="txt">${esc(t)}</span></button>`).join("")}</div>
+    <span class="tag plain">ท็อปปิ้งจากวงล้อ</span>
+    ${wheelHTML(TOPPINGS, TEA_COLORS)}
+    <button class="link" id="spin">${S.top ? "หมุนใหม่" : "หมุนท็อปปิ้ง"}</button>`;
+  const check = () => { cta.disabled = !(S.tea && S.sweet && S.top); };
+  bar("สร้างการ์ดสรุป", () => go("card"), true);
+  const bind = (sel,key) => app.querySelectorAll(sel+" .opt").forEach(b => b.onclick = () => {
+    S[key] = b.dataset.v;
+    app.querySelectorAll(sel+" .opt").forEach(o => o.setAttribute("aria-pressed", o===b?"true":"false"));
+    check();
+  });
+  bind("#base","tea"); bind("#sweet","sweet");
+  const spin = document.getElementById("spin");
+  if(S.top) document.getElementById("result").innerHTML = esc(S.top)+"<small>วงล้อเลือกให้แล้ว</small>";
+  spin.onclick = () => {
+    spin.disabled = true;
+    spinWheel(TOPPINGS, v => {
+      S.top = v; spin.disabled = false; spin.textContent = "หมุนใหม่"; check();
+    });
+  };
+  check();
+}
+
+
+const PC_W = 1080, PC_H = 1900;
+function rrect(c,x,y,w,hh,r){
+  if(c.roundRect){ c.beginPath(); c.roundRect(x,y,w,hh,r); return; }
+  c.beginPath(); c.moveTo(x+r,y); c.arcTo(x+w,y,x+w,y+hh,r); c.arcTo(x+w,y+hh,x,y+hh,r);
+  c.arcTo(x,y+hh,x,y,r); c.arcTo(x,y,x+w,y,r); c.closePath();
+}
+function wrapLines(c,txt,max,maxLines){
+  const words = String(txt).split(/(\s+)/);
+  const lines = []; let cur = "";
+  for(const w of words){
+    const test = cur + w;
+    if(c.measureText(test).width > max && cur.trim()){
+      lines.push(cur.trim()); cur = w.trim() ? w : "";
+      if(lines.length === maxLines-1 && c.measureText(cur).width > max){ }
+    } else cur = test;
+  }
+  if(cur.trim()) lines.push(cur.trim());
+  if(lines.length > maxLines){
+    const keep = lines.slice(0,maxLines);
+    keep[maxLines-1] = keep[maxLines-1].replace(/\s+\S*$/,"") + "…";
+    return keep;
+  }
+  return lines;
+}
+function fitTxt(c,txt,max){
+  if(c.measureText(txt).width <= max) return txt;
+  let t = txt;
+  while(t.length > 4 && c.measureText(t+"…").width > max) t = t.slice(0,-1);
+  return t+"…";
+}
+function fit(c,txt,max,size,weight){
+  let s = size;
+  while(s > 18){ c.font = `${weight} ${s}px Anuphan, sans-serif`; if(c.measureText(txt).width <= max) break; s -= 2; }
+  return s;
+}
+async function makePostcard(file){
+  const w = worldOf(S.type);
+  const cv = document.createElement("canvas");
+  cv.width = PC_W; cv.height = PC_H;
+  const c = cv.getContext("2d");
+  c.fillStyle = "#F7F4EC"; c.fillRect(0,0,PC_W,PC_H);
+  if(CFG.img.pcbg){
+    try{
+      const bg = await new Promise((res,rej) => {
+        const im = new Image(); im.onload = () => res(im); im.onerror = rej; im.src = CFG.img.pcbg;
+      });
+      const bs = Math.max(PC_W/bg.width, PC_H/bg.height);
+      c.drawImage(bg, (PC_W-bg.width*bs)/2, (PC_H-bg.height*bs)/2, bg.width*bs, bg.height*bs);
+    }catch(e){}
+  }
+  c.fillStyle = w.tint; c.fillRect(0,0,PC_W,40);
+
+  let bmp = null;
+  try{
+    bmp = await createImageBitmap(file, {imageOrientation:"from-image"});
+  }catch(e){
+    bmp = await new Promise((res,rej) => {
+      const im = new Image(); im.onload = () => res(im); im.onerror = rej;
+      im.src = URL.createObjectURL(file);
+    });
+  }
+  const px = 60, pw = PC_W - 120;
+  const iw = 820, ih = Math.round(iw*5/4), ix = Math.round((PC_W-iw)/2), iy = 60;
+  const base = iy + ih;
+  const scale = Math.max(iw/bmp.width, ih/bmp.height);
+  const dw = bmp.width*scale, dh = bmp.height*scale;
+  c.save(); rrect(c,ix,iy,iw,ih,28); c.clip();
+  c.drawImage(bmp, ix + (iw-dw)/2, iy + (ih-dh)/2, dw, dh);
+  c.restore();
+  c.strokeStyle = "rgba(20,20,15,.12)"; c.lineWidth = 2;
+  rrect(c,ix,iy,iw,ih,28); c.stroke();
+
+  if(CFG.img.pcbg){
+    c.fillStyle = "rgba(247,244,236,.94)";
+    rrect(c, 34, base+16, PC_W-68, (PC_H-146)-(base+16), 26); c.fill();
+  }
+  const tp = TYPES[S.type] || {n:"",t:[],d:"",s:""};
+  const tw = pw - 230;
+  try{
+    const ch = await new Promise((res,rej) => {
+      const im = new Image(); im.onload = () => res(im); im.onerror = rej;
+      im.src = CFG.img[w.code] || charDataURL(w.code);
+    });
+    if(CFG.img[w.code]){
+      const bw = 170, bh = 200, sc = Math.max(bw/ch.width, bh/ch.height);
+      const dw = ch.width*sc, dh = ch.height*sc;
+      c.save(); rrect(c, PC_W-px-bw, base+130, bw, bh, 16); c.clip();
+      c.drawImage(ch, PC_W-px-bw + (bw-dw)/2, base+130 + (bh-dh)/2, dw, dh);
+      c.restore();
+    } else {
+      c.drawImage(ch, PC_W-px-160, base+130, 160, 240);
+    }
+  }catch(e){}
+  c.textAlign = "left"; c.fillStyle = "#96917F";
+  c.font = "500 26px Anuphan, sans-serif";
+  c.fillText(`${S.serial} · ${new Date().toLocaleDateString("th-TH",{day:"numeric",month:"long",year:"numeric"})}`, px, base+52);
+
+  const nameSize = fit(c, S.scent, pw, 66, "700");
+  c.fillStyle = "#14140F"; c.font = `700 ${nameSize}px Anuphan, sans-serif`;
+  c.fillText(S.scent, px, base+120);
+
+  c.fillStyle = "#5F5C50"; c.font = "500 29px Anuphan, sans-serif";
+  c.fillText(fitTxt(c,`โดย ${S.name} · ${S.type} ${tp.n} · ${w.code} — ${w.title}`,tw), px, base+164);
+
+  c.fillStyle = w.color; c.font = "600 27px Anuphan, sans-serif";
+  c.fillText(fitTxt(c,`${(tp.t||[]).join(" · ")} · ${w.mood}`,tw), px, base+204);
+
+  c.fillStyle = "#5F5C50"; c.font = "500 26px Anuphan, sans-serif";
+  wrapLines(c, tp.d, tw, 3).forEach((ln,i) => c.fillText(ln, px, base+244 + i*36));
+  c.fillStyle = "#96917F"; c.font = "italic 500 25px Anuphan, sans-serif";
+  wrapLines(c, "ตอนเลือกกลิ่น: " + tp.s, tw, 2).forEach((ln,i) => c.fillText(ln, px, base+322 + i*34));
+
+  const rows = [
+    ["กลิ่นฐาน", S.picks.join(" · ")],
+    ["เติมเอง", S.touch],
+    ["วงล้อ", S.forced],
+    ["ชาไทย", `${S.tea} · ${S.sweet}`],
+    ["ท็อปปิ้ง", S.top],
+    ["เกมทายกลิ่น", `${S.smellScore} / ${SMELL.length}`]
+  ];
+  let y = base+400;
+  rows.forEach(([k,v]) => {
+    c.strokeStyle = "#E6E0D0"; c.lineWidth = 1.5;
+    c.beginPath(); c.moveTo(px,y); c.lineTo(PC_W-px,y); c.stroke();
+    c.fillStyle = "#96917F"; c.font = "500 27px Anuphan, sans-serif";
+    c.fillText(k, px, y+40);
+    c.fillStyle = "#14140F"; c.textAlign = "right";
+    const vs = fit(c, v, pw-260, 29, "600");
+    c.font = `600 ${vs}px Anuphan, sans-serif`;
+    c.fillText(v, PC_W-px, y+40);
+    c.textAlign = "left";
+    y += 44;
+  });
+
+  c.fillStyle = w.deep; c.fillRect(0, PC_H-150, PC_W, 150);
+  c.fillStyle = "#FBF8EE"; c.font = "600 32px Anuphan, sans-serif";
+  c.fillText("Brew your world, sip your story", px, PC_H-88);
+  c.fillStyle = "rgba(251,248,238,.7)"; c.font = "500 25px Anuphan, sans-serif";
+  c.fillText(`SAO CAFÉ · IG ${CFG.ig} · LINE ${CFG.line}`, px, PC_H-44);
+  c.textAlign = "right"; c.fillStyle = "#FBF8EE"; c.font = "700 44px Anuphan, sans-serif";
+  c.fillText(S.type, PC_W-px, PC_H-64);
+  c.textAlign = "left";
+
+  return new Promise(res => cv.toBlob(b => res(b), "image/png", .95));
+}
+
+function vCard(){
+  const w = worldOf(S.type); paint(w);
+  if(!S.serial) S.serial = "BYT-" + new Date().toISOString().slice(0,10).replace(/-/g,"") + "-" +
+    String(Math.floor(Math.random()*900)+100);
+  const d = new Date().toLocaleDateString("th-TH",{day:"numeric",month:"long",year:"numeric"});
+  app.innerHTML = `
+    <span class="tag world">Take home · signature recipe</span>
+    <div class="hero">
+      ${art(w.art,160,"art")}${art("d-glass",140,"art2")}
+      <div class="photoslot" id="photoSlot">${S.photoURL
+        ? `<img src="${S.photoURL}" alt="รูปของคุณ"><span class="swap">เปลี่ยนรูป</span>`
+        : `<div class="ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+             <path d="M3 8h3l2-2h8l2 2h3v11H3z"/><circle cx="12" cy="13" r="3.6"/></svg>
+             แตะเพื่อใส่รูปของคุณ<br>ถ่ายใหม่หรือเลือกจากคลังก็ได้</div>`}</div>
+      <div class="no">${esc(S.serial)} · ${esc(d)}</div>
+      <h2>${esc(S.scent)}</h2>
+      <p class="sub">โดย ${esc(S.name)} · ${esc(S.type)} · ${esc(w.code)} — ${esc(w.title)}</p>
+      <div class="rows">
+        <div><span>กลิ่นฐาน</span><span>${S.picks.map(esc).join(" · ")}</span></div>
+        <div><span>เติมเอง</span><span>${esc(S.touch)}</span></div>
+        <div><span>วงล้อ</span><span>${esc(S.forced)}</span></div>
+        <div><span>ชาไทย</span><span>${esc(S.tea)} · ${esc(S.sweet)}</span></div>
+        <div><span>ท็อปปิ้ง</span><span>${esc(S.top)}</span></div>
+        <div><span>เกมทายกลิ่น</span><span>${S.smellScore} / ${SMELL.length}</span></div>
+      </div>
+      <span class="seal">Brew your world, sip your story</span>
+    </div>
+    <div class="divider">ครั้งหน้าเจอกัน</div>
+    <div class="card">
+      <div class="rows">
+        <div><span>${icon("มะลิ",20)}โพสต์แล้วแท็ก</span><span>${esc(CFG.ig)}</span></div>
+        <div><span>${icon("ตะไคร้",20)}จองรอบถัดไป</span><span>LINE ${esc(CFG.line)}</span></div>
+      </div>
+    </div>
+    <div class="divider">โปสการ์ดของคุณ</div>
+    <div class="photobox">
+      <input type="file" id="shotInput" accept="image/*">
+      <button class="shot" id="shotBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+          <path d="M3 8h3l2-2h8l2 2h3v11H3z"/><circle cx="12" cy="13" r="3.6"/></svg>
+        ${S.photoURL ? "เปลี่ยนรูปของคุณ" : "แนบรูปของคุณ"}
+      </button>
+      <button class="link" id="pcBtn" ${S.photoURL?"":"disabled style=\"opacity:.45\""}>สร้างโปสการ์ดสำหรับบันทึก</button>
+      <div class="pcwrap" id="pcwrap"><img id="pcimg" alt="โปสการ์ดสูตรของคุณ"></div>
+      <p class="pchint" id="pchint"></p>
+    </div>
+    <p class="note">รูปอยู่ในเครื่องของคุณเท่านั้น ไม่ได้ถูกส่งไปที่ไหน · แจ้งเลขการ์ดกับทีมงานเพื่อขอสูตรเดิมซ้ำได้ภายหลัง</p>`;
+  const shotInput = document.getElementById("shotInput");
+  const shotBtn = document.getElementById("shotBtn");
+  const slot = document.getElementById("photoSlot");
+  const pcBtn = document.getElementById("pcBtn");
+  const pcwrap = document.getElementById("pcwrap");
+  const pcimg = document.getElementById("pcimg");
+  const pchint = document.getElementById("pchint");
+
+  const openPicker = () => shotInput.click();
+  shotBtn.onclick = openPicker;
+  slot.onclick = openPicker;
+
+  shotInput.onchange = () => {
+    const f = shotInput.files && shotInput.files[0];
+    if(!f) return;
+    if(S.photoURL) URL.revokeObjectURL(S.photoURL);
+    S.photoFile = f;
+    S.photoURL = URL.createObjectURL(f);
+    slot.innerHTML = `<img src="${S.photoURL}" alt="รูปของคุณ"><span class="swap">เปลี่ยนรูป</span>`;
+    slot.onclick = openPicker;
+    shotBtn.lastChild.textContent = " เปลี่ยนรูปของคุณ ";
+    pcBtn.disabled = false; pcBtn.style.opacity = "1";
+    pcwrap.classList.remove("on"); pchint.textContent = "";
+  };
+
+  pcBtn.onclick = async () => {
+    if(!S.photoFile) return;
+    pcBtn.disabled = true;
+    pchint.textContent = "กำลังทำโปสการ์ด รอสักครู่";
+    try{
+      if(document.fonts && document.fonts.load){
+        await Promise.all([document.fonts.load("700 66px Anuphan"), document.fonts.load("500 30px Anuphan")]);
+      }
+      const blob = await makePostcard(S.photoFile);
+      const url = URL.createObjectURL(blob);
+      pcimg.src = url;
+      pcwrap.classList.add("on");
+      pchint.textContent = "กดค้างที่ภาพเพื่อบันทึกลงเครื่อง หรือกดปุ่มด้านล่างเพื่อดาวน์โหลด";
+      const old = pcwrap.querySelector("a"); if(old) old.remove();
+      const dl = document.createElement("a");
+      dl.className = "link"; dl.textContent = "บันทึกโปสการ์ด";
+      dl.href = url; dl.download = `${S.serial}.png`;
+      pcwrap.appendChild(dl);
+    }catch(e){
+      pchint.textContent = "ทำโปสการ์ดไม่สำเร็จ ลองเปลี่ยนรูปแล้วกดใหม่ หรือแคปหน้าจอนี้เก็บไว้ก็ได้";
+    }
+    pcBtn.disabled = false;
+  };
+
+  bar("เริ่มใหม่สำหรับผู้เรียนคนถัดไป", () => {
+    if(S.photoURL) URL.revokeObjectURL(S.photoURL);
+    Object.assign(S,{name:"",qi:0,ans:[],counts:null,photoFile:null,photoURL:"",type:"",picks:[],touch:"",forced:"",rerolled:false,
+      smellI:0,smellScore:0,scent:"",tea:"",sweet:"",top:"",serial:""});
+    go("start");
+  });
+}
+
+loadCFG();
+bindAdminTap();
+if(location.hash.toLowerCase() === "#admin" || /(\?|&)admin\b/i.test(location.search)) openAdmin();
+window.addEventListener("hashchange", () => {
+  if(location.hash.toLowerCase() === "#admin") openAdmin();
+});
+render();
+</script>
+</body>
+</html>
