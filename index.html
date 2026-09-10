@@ -329,7 +329,7 @@ footer{margin-top:30px;padding-top:16px;border-top:1px dashed var(--line-2);
   <footer>
     บริษัท ไชยจันลา จำกัด · RANGSAN Academy · SAO Café · RANGSAN Coffee<br>
     จองรอบถัดไป LINE @saocafe · IG saocafe_official<br>
-    <span style="opacity:.55">v23 · 10 ก.ย. 2569</span>
+    <span style="opacity:.55">v25 · 10 ก.ย. 2569</span>
   </footer>
 </div>
 <div class="admin" id="admin"><div class="adminbox" id="adminBox"></div></div>
@@ -486,6 +486,7 @@ const DEFAULTS = {
         char_NT:"", char_NF:"", char_SJ:"", char_SP:""},
   photoTilt: 0,
   photo: {w:52, x:0, y:0, ty:0, frame:true},
+  syncUrl: "",
   worldsText: {
     NT: WORLDS.NT.base.join("\n"), NF: WORLDS.NF.base.join("\n"),
     SJ: WORLDS.SJ.base.join("\n"), SP: WORLDS.SP.base.join("\n")
@@ -534,7 +535,59 @@ function fileToDataURL(file, maxW){
 }
 let CFG = JSON.parse(JSON.stringify(DEFAULTS));
 const CFG_KEY = "byt-config-v1";
-const APP_VER = "v23 · 10 ก.ย. 2569";
+const LOG_KEY = "byt-log-v1";
+function readLog(){
+  try{ return JSON.parse(localStorage.getItem(LOG_KEY) || "[]"); }catch(e){ return []; }
+}
+function writeLog(a){
+  try{ localStorage.setItem(LOG_KEY, JSON.stringify(a.slice(-800))); return true; }catch(e){ return false; }
+}
+function logPlay(){
+  if(S.logged) return;
+  S.logged = true;
+  const rec = {t: Date.now(), name: S.name, type: S.type, scent: S.scent,
+               score: S.smellScore, tea: S.tea, top: S.top, serial: S.serial};
+  const a = readLog(); a.push(rec); writeLog(a);
+  if(CFG.syncUrl){
+    try{
+      fetch(CFG.syncUrl, {method:"POST", mode:"cors",
+        headers:{"Content-Type":"text/plain;charset=utf-8"},
+        body: JSON.stringify(Object.assign({action:"add"}, rec))}).catch(()=>{});
+    }catch(e){}
+  }
+}
+async function remoteStats(){
+  if(!CFG.syncUrl) return null;
+  try{
+    const r = await fetch(CFG.syncUrl + (CFG.syncUrl.includes("?") ? "&" : "?") + "action=stats&v=" + Date.now());
+    if(!r.ok) return null;
+    const j = await r.json();
+    return (j && typeof j.all === "number") ? j : null;
+  }catch(e){ return null; }
+}
+const dayKey = ms => new Date(ms).toLocaleDateString("th-TH");
+function logStats(){
+  const a = readLog(), today = dayKey(Date.now());
+  const t = a.filter(r => dayKey(r.t) === today);
+  const top = t.slice().sort((x,y) => (y.score||0) - (x.score||0)).slice(0,5);
+  const types = {};
+  a.forEach(r => { if(r.type) types[r.type] = (types[r.type]||0) + 1; });
+  const best = Object.entries(types).sort((x,y) => y[1]-x[1])[0];
+  return {all: a.length, today: t.length, top, best, list: a};
+}
+function exportLog(){
+  const a = readLog();
+  const head = "วันเวลา,ชื่อ,ไทป์,ชื่อกลิ่น,คะแนนเกม,ฐานชา,ท็อปปิ้ง,เลขการ์ด";
+  const rows = a.map(r => [new Date(r.t).toLocaleString("th-TH"), r.name, r.type, r.scent,
+                           r.score, r.tea, r.top, r.serial]
+    .map(v => `"${String(v==null?"":v).replace(/"/g,'""')}"`).join(","));
+  const blob = new Blob(["\uFEFF" + [head, ...rows].join("\n")], {type:"text/csv;charset=utf-8"});
+  const el = document.createElement("a");
+  el.href = URL.createObjectURL(blob);
+  el.download = "byt-players.csv";
+  el.click();
+}
+const APP_VER = "v25 · 10 ก.ย. 2569";
 async function loadCFG(){
   let remote = null, local = null;
   try{
@@ -708,6 +761,15 @@ function adminForm(){
       <button class="save" id="adSave">บันทึก</button>
       <button class="close" id="adClose2">ปิด</button>
     </div>
+    <label>ฐานข้อมูลออนไลน์ (ไม่ใส่ก็ได้ — เก็บในเครื่องอย่างเดียว)</label>
+    <input id="adSync" placeholder="วางลิงก์ Web app ของ Google Apps Script" value="${esc(CFG.syncUrl||"")}">
+    <p class="adminnote" style="margin:6px 0 0">ใส่แล้วทุกเครื่องจะส่งผู้เล่นไปรวมที่ Google Sheet เดียวกัน และหน้าสุดท้ายจะโชว์ยอดรวมของทั้งร้าน</p>
+    <label>ประวัติผู้เล่น</label>
+    <p class="adminnote" style="margin:0 0 8px">เก็บในเครื่องนี้เครื่องเดียว · ตอนนี้มี ${logStats().all} คน (วันนี้ ${logStats().today} คน)</p>
+    <div class="adminrow">
+      <button class="save" id="adCSV">ส่งออกรายชื่อเป็น CSV</button>
+      <button class="reset" id="adWipe">ล้างประวัติ</button>
+    </div>
     <div class="adminrow">
       <button class="save" id="adExport">ส่งออกไฟล์ config.json</button>
       <button class="reset" id="adClear">ใช้ค่ากลางของเว็บ</button>
@@ -753,6 +815,12 @@ function adminForm(){
     const s = document.getElementById("photoSlot");
     if(s) s.style.transform = v ? `rotate(${v}deg)` : "";
   };
+  document.getElementById("adCSV").onclick = exportLog;
+  document.getElementById("adWipe").onclick = () => {
+    if(!confirm("ล้างประวัติผู้เล่นทั้งหมดในเครื่องนี้?")) return;
+    try{ localStorage.removeItem(LOG_KEY); }catch(e){}
+    adminForm();
+  };
   document.getElementById("adExport").onclick = exportCFG;
   document.getElementById("adClear").onclick = clearLocal;
   document.getElementById("adReset").onclick = () => {
@@ -778,6 +846,7 @@ function adminForm(){
       ty: Math.max(-140, Math.min(140, parseFloat(g("adPT")) || 0)),
       frame: document.getElementById("adPF").checked
     };
+    CFG.syncUrl = g("adSync").trim();
     CFG.pin = g("adNewPin").trim() || DEFAULTS.pin;
     const ok = saveCFG(); applyCFG();
     const note = box.querySelector(".adminnote");
@@ -799,7 +868,7 @@ function bindAdminTap(){
   };
 }
 
-const S = {name:"",qi:0,ans:[],counts:null,photoFile:null,photoURL:"",type:"",picks:[],touch:"",forced:"",rerolled:false,
+const S = {name:"",qi:0,ans:[],counts:null,logged:false,photoFile:null,photoURL:"",type:"",picks:[],touch:"",forced:"",rerolled:false,
            smellI:0,smellScore:0,scent:"",tea:"",sweet:"",top:"",serial:"",screen:0};
 const SCREENS = ["start","quiz","world","build","roulette","name","smell","tea","card"];
 const app = document.getElementById("app");
@@ -1503,6 +1572,8 @@ function vCard(){
   if(!S.serial) S.serial = "BYT-" + new Date().toISOString().slice(0,10).replace(/-/g,"") + "-" +
     String(Math.floor(Math.random()*900)+100);
   const d = new Date().toLocaleDateString("th-TH",{day:"numeric",month:"long",year:"numeric"});
+  logPlay();
+  const st = logStats();
   app.innerHTML = `
     <span class="tag world">Take home · signature recipe</span>
     <div class="hero">
@@ -1524,6 +1595,16 @@ function vCard(){
         <div><span>เกมทายกลิ่น</span><span>${S.smellScore} / ${SMELL.length}</span></div>
       </div>
       <span class="seal">Brew your world, sip your story</span>
+    </div>
+    <div class="divider">ผู้เล่นกิจกรรมนี้</div>
+    <div class="card" id="statCard">
+      <h3 id="statToday">วันนี้มีผู้เล่นแล้ว ${st.today} คน</h3>
+      <p class="sub" id="statAll">สะสมทั้งหมด ${st.all} คน${st.best ? ` · ไทป์ที่มาบ่อยที่สุดคือ ${esc(st.best[0])} (${st.best[1]} คน)` : ""}</p>
+      <div class="rows">
+        ${st.top.map((r,i) => `<div><span>${i+1}. ${esc(r.name||"ไม่ระบุชื่อ")} · ${esc(r.type||"")}</span>
+          <span>${r.score}/${SMELL.length}</span></div>`).join("")}
+      </div>
+      <p class="sub" style="margin-top:12px" id="statSrc">นับจากเครื่องนี้เครื่องเดียว</p>
     </div>
     <div class="divider">ครั้งหน้าเจอกัน</div>
     <div class="card">
@@ -1598,9 +1679,22 @@ function vCard(){
     pcBtn.disabled = false;
   };
 
+  remoteStats().then(rs => {
+    if(!rs) return;
+    const el = id => document.getElementById(id);
+    if(el("statToday")) el("statToday").textContent = `วันนี้มีผู้เล่นแล้ว ${rs.today} คน`;
+    if(el("statAll")) el("statAll").textContent =
+      `สะสมทั้งหมด ${rs.all} คน` + (rs.bestType ? ` · ไทป์ที่มาบ่อยที่สุดคือ ${rs.bestType}` : "");
+    if(el("statSrc")) el("statSrc").textContent = "ยอดรวมทุกเครื่องจากฐานข้อมูลออนไลน์";
+    const rows = el("statCard") && el("statCard").querySelector(".rows");
+    if(rows && Array.isArray(rs.top) && rs.top.length){
+      rows.innerHTML = rs.top.slice(0,5).map((r,i) =>
+        `<div><span>${i+1}. ${esc(r.name||"ไม่ระบุชื่อ")} · ${esc(r.type||"")}</span><span>${r.score}/${SMELL.length}</span></div>`).join("");
+    }
+  });
   bar("เริ่มใหม่สำหรับผู้เรียนคนถัดไป", () => {
     if(S.photoURL) URL.revokeObjectURL(S.photoURL);
-    Object.assign(S,{name:"",qi:0,ans:[],counts:null,photoFile:null,photoURL:"",type:"",picks:[],touch:"",forced:"",rerolled:false,
+    Object.assign(S,{name:"",qi:0,ans:[],counts:null,logged:false,photoFile:null,photoURL:"",type:"",picks:[],touch:"",forced:"",rerolled:false,
       smellI:0,smellScore:0,scent:"",tea:"",sweet:"",top:"",serial:""});
     go("start");
   });
