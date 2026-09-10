@@ -164,7 +164,10 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--world);outline-
   border:1.5px solid rgba(255,255,255,.45);font-size:13px;transform:rotate(-1.5deg)}
 .bandimg{position:absolute;right:-6px;bottom:-6px;width:150px;height:auto;z-index:1;
   border-radius:14px;box-shadow:0 6px 16px rgba(20,20,15,.18)}
-.cornimg{position:absolute;right:12px;bottom:10px;width:92px;height:auto;border-radius:10px;z-index:3;
+.cardflex{display:flex;gap:14px;align-items:flex-start}
+.cardflex .txt{flex:1;min-width:0}
+.charcol{flex:none;width:96px}
+.charcol img{width:96px;height:auto;border-radius:10px;display:block;
   box-shadow:0 4px 12px rgba(20,20,15,.16)}
 .coverfull{display:block;width:100%;max-width:400px;margin:16px auto 0;height:auto;border-radius:16px}
 .coverimg{width:100%;border-radius:16px;margin-top:14px;display:block}
@@ -193,12 +196,11 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--world);outline-
 .adminrow .close{background:var(--line);color:var(--ink)}
 .adminrow .reset{background:transparent;border:1.5px solid var(--line-2);color:var(--ink-2)}
 .adminnote{font-size:12.5px;color:var(--ink-3);margin-top:12px;line-height:1.7}
-.photoslot{position:relative;z-index:3;margin:0 0 18px;border-radius:16px;overflow:hidden;
+.photoslot{position:relative;z-index:3;width:56%;margin:10px auto 26px;transform-origin:center;transition:transform .2s ease;border-radius:14px;overflow:hidden;
   aspect-ratio:4/5;display:grid;place-items:center;cursor:pointer;
-  background:rgba(255,255,255,.10);border:1.5px dashed rgba(255,255,255,.45)}
-.photoslot.has{border:6px solid #14140F;border-style:solid;background:#14140F;
-  box-shadow:0 6px 18px rgba(0,0,0,.35);width:82%;margin:0 auto 18px}
-.photoslot img{width:100%;height:100%;object-fit:cover;display:block;border-radius:9px}
+  background:rgba(255,255,255,.10);border:1.5px dashed rgba(255,255,255,.4)}
+.photoslot.has{border:0;background:transparent;box-shadow:0 6px 16px rgba(0,0,0,.32)}
+.photoslot img{width:100%;height:100%;object-fit:cover;display:block;border-radius:14px}
 .photoslot .ph{text-align:center;padding:22px;font-size:14.5px;line-height:1.7;color:rgba(251,248,238,.85)}
 .photoslot .ph svg{width:26px;height:26px;display:block;margin:0 auto 8px}
 .photoslot .swap{position:absolute;right:10px;bottom:10px;background:rgba(20,20,15,.6);
@@ -437,8 +439,10 @@ const DEFAULTS = {
   smell: SMELL.map(s => s.ans),
   ig: "saocafe_official",
   line: "@saocafe",
-  img: {logo:"", cover:"", includes:"", pcbg:"", NT:"", NF:"", SJ:"", SP:""},
+  img: {logo:"", cover:"", includes:"", pcbg:"", NT:"", NF:"", SJ:"", SP:"",
+        char_NT:"", char_NF:"", char_SJ:"", char_SP:""},
   photoTilt: 0,
+  photo: {w:60, x:0, y:0, frame:true},
   worldsText: {
     NT: WORLDS.NT.base.join("\n"), NF: WORLDS.NF.base.join("\n"),
     SJ: WORLDS.SJ.base.join("\n"), SP: WORLDS.SP.base.join("\n")
@@ -524,6 +528,8 @@ function saveCFG(){
 function applyCFG(){
   if(!CFG.img) CFG.img = JSON.parse(JSON.stringify(DEFAULTS.img));
   if(!CFG.worldsText) CFG.worldsText = {};
+  Object.keys(TYPES).forEach(t => { if(!(("type_"+t) in CFG.img)) CFG.img["type_"+t] = ""; });
+  CFG.photo = Object.assign({w:60, x:0, y:0, frame:true}, CFG.photo || {});
   ["NT","NF","SJ","SP"].forEach(k => {
     const txt = (CFG.worldsText && CFG.worldsText[k]) || lines(CFG.worlds[k] || []);
     const pw = parseWorld(txt);
@@ -591,13 +597,24 @@ function adminForm(){
     <label>รูปกราฟิกของร้าน</label>
     ${[["logo","โลโก้บนหัวแอป"],["cover","ภาพหน้าแรก (ใส่แล้วแทนหัวข้อความทั้งบล็อก)"],
        ["includes","ภาพบล็อก 90 นาทีนี้คุณจะได้"],["pcbg","พื้นหลังโปสการ์ด (แนวตั้ง 1080×1900)"],["NT","NT — Clear"],["NF","NF — Bloom"],
-       ["SJ","SJ — Root"],["SP","SP — Spark"]].map(([k,lb]) => `
+       ["SJ","SJ — Root"],["SP","SP — Spark"],
+       ["char_NT","ตัวละคร NT — Clear"],["char_NF","ตัวละคร NF — Bloom"],
+       ["char_SJ","ตัวละคร SJ — Root"],["char_SP","ตัวละคร SP — Spark"]].map(([k,lb]) => `
       <div class="imgrow">
         ${CFG.img[k] ? `<img src="${CFG.img[k]}" alt="">` : `<div class="none">ยังไม่มี</div>`}
         <div style="flex:1;font-size:14px">${lb}</div>
         <button data-pick="${k}">เลือกรูป</button>
         ${CFG.img[k] ? `<button data-del="${k}">ลบ</button>` : ""}
       </div>`).join("")}
+    <label>รูปประจำไทป์ทั้ง 16 (ใส่เฉพาะที่มีก็ได้)</label>
+    ${Object.keys(TYPES).map(t => `
+      <div class="imgrow">
+        ${CFG.img["type_"+t] ? `<img src="${CFG.img["type_"+t]}" alt="">` : `<div class="none">ยังไม่มี</div>`}
+        <div style="flex:1;font-size:14px">${t} · ${esc(TYPES[t].n)}</div>
+        <button data-pick="type_${t}">เลือกรูป</button>
+        ${CFG.img["type_"+t] ? `<button data-del="type_${t}">ลบ</button>` : ""}
+      </div>`).join("")}
+    <p class="adminnote" style="margin-top:6px">ไทป์ไหนใส่รูปไว้ จะใช้รูปนั้นแทนรูปตัวละครของกลุ่ม · ไทป์ที่ไม่ใส่จะใช้รูปตัวละครกลุ่มแทน</p>
     ${allSubs().length ? `<label>รูปกลุ่มย่อยในแต่ละบ้าน</label>
       ${allSubs().map(s => `
         <div class="imgrow">
@@ -608,8 +625,22 @@ function adminForm(){
         </div>`).join("")}`
       : `<p class="adminnote" style="margin-top:10px">ยังไม่มีกลุ่มย่อย — พิมพ์ <b>ชื่อกลุ่มย่อย: ของ1, ของ2</b> ในช่องบ้านด้านบน แล้วกดบันทึก ช่องใส่รูปของกลุ่มย่อยจะขึ้นตรงนี้</p>`}
     <input type="file" id="adImgFile" accept="image/*" style="display:none">
-    <label>องศาเอียงของรูปในกรอบ (-6 ถึง 6 · 0 = ตรง)</label>
-    <input id="adTilt" type="number" step="0.5" min="-6" max="6" value="${Number(CFG.photoTilt)||0}">
+    <label>รูปที่ลูกค้าถ่าย — วางบนโปสการ์ด</label>
+    <div class="imgrow"><div style="flex:1;font-size:14px">องศาเอียง (-6 ถึง 6)</div>
+      <input id="adTilt" type="number" step="0.5" min="-6" max="6" style="width:110px"
+        value="${Number(CFG.photoTilt)||0}"></div>
+    <div class="imgrow"><div style="flex:1;font-size:14px">ขนาด (% ของความกว้าง)</div>
+      <input id="adPW" type="number" step="1" min="30" max="92" style="width:110px"
+        value="${Number(CFG.photo.w)||60}"></div>
+    <div class="imgrow"><div style="flex:1;font-size:14px">เลื่อนซ้าย-ขวา (px)</div>
+      <input id="adPX" type="number" step="5" min="-260" max="260" style="width:110px"
+        value="${Number(CFG.photo.x)||0}"></div>
+    <div class="imgrow"><div style="flex:1;font-size:14px">เลื่อนขึ้น-ลง (px)</div>
+      <input id="adPY" type="number" step="5" min="-60" max="360" style="width:110px"
+        value="${Number(CFG.photo.y)||0}"></div>
+    <div class="imgrow"><div style="flex:1;font-size:14px">ใส่กรอบดำรอบรูป</div>
+      <input id="adPF" type="checkbox" style="width:22px;height:22px" ${CFG.photo.frame?"checked":""}></div>
+    <p class="adminnote" style="margin-top:6px">ถ้าพื้นหลังโปสการ์ดมีกรอบอยู่แล้ว ให้ติ๊กออก แล้วปรับขนาดกับตำแหน่งให้รูปลงพอดีในกรอบของภาพพื้นหลัง</p>
     <label>เปลี่ยนรหัสผ่าน</label><input id="adNewPin" value="${esc(CFG.pin)}">
     <div class="adminrow">
       <button class="save" id="adSave">บันทึก</button>
@@ -640,11 +671,17 @@ function adminForm(){
     const note = box.querySelector(".adminnote");
     note.textContent = "กำลังย่อรูป รอสักครู่";
     try{
-      CFG.img[pickKey] = await fileToDataURL(f, pickKey === "logo" ? 300 : (pickKey === "cover" || pickKey === "includes" || pickKey === "pcbg") ? 1080 : (pickKey.includes("::") ? 420 : 900));
+      CFG.img[pickKey] = await fileToDataURL(f, pickKey === "logo" ? 300 : (pickKey === "cover" || pickKey === "includes" || pickKey === "pcbg") ? 1080 : pickKey.startsWith("char_") || pickKey.startsWith("type_") ? 500 : (pickKey.includes("::") ? 420 : 900));
       const ok = saveCFG(); applyCFG(); adminForm();
       const n2 = box.querySelector(".adminnote");
       n2.textContent = ok ? "ใส่รูปแล้ว" : "รูปใหญ่เกินกว่าที่เครื่องเก็บได้ ลองใช้รูปเล็กลง";
     }catch(e){ note.textContent = "อ่านไฟล์รูปไม่สำเร็จ ลองไฟล์อื่น"; }
+  };
+  const tiltInput = document.getElementById("adTilt");
+  tiltInput.oninput = () => {
+    const v = Math.max(-6, Math.min(6, parseFloat(tiltInput.value) || 0));
+    const s = document.getElementById("photoSlot");
+    if(s) s.style.transform = v ? `rotate(${v}deg)` : "";
   };
   document.getElementById("adExport").onclick = exportCFG;
   document.getElementById("adClear").onclick = clearLocal;
@@ -664,6 +701,12 @@ function adminForm(){
     CFG.line = g("adLine").trim() || DEFAULTS.line;
     CFG.ig = g("adIG").trim() || DEFAULTS.ig;
     CFG.photoTilt = Math.max(-6, Math.min(6, parseFloat(g("adTilt")) || 0));
+    CFG.photo = {
+      w: Math.max(30, Math.min(92, parseFloat(g("adPW")) || 60)),
+      x: Math.max(-260, Math.min(260, parseFloat(g("adPX")) || 0)),
+      y: Math.max(-60, Math.min(360, parseFloat(g("adPY")) || 0)),
+      frame: document.getElementById("adPF").checked
+    };
     CFG.pin = g("adNewPin").trim() || DEFAULTS.pin;
     const ok = saveCFG(); applyCFG();
     const note = box.querySelector(".adminnote");
@@ -910,13 +953,18 @@ function vWorld(){
       </div>
     </div>
     <div class="card tinted">
-      ${CFG.img[w.code] ? `<img class="cornimg" src="${CFG.img[w.code]}" alt="">`
-                        : `<div style="position:absolute;right:14px;bottom:6px;opacity:.95">${charSVG(w.code,86)}</div>`}
-      <h3>${esc(S.type)} · ${esc((TYPES[S.type]||{}).n||"")}</h3>
-      <p class="sub">${((TYPES[S.type]||{}).t||[]).join(" · ")}</p>
-      <div class="rows">
-        <div><span>นิสัยเด่น</span><span>${esc((TYPES[S.type]||{}).d||"")}</span></div>
-        <div><span>ตอนเลือกกลิ่น</span><span style="max-width:66%">${esc((TYPES[S.type]||{}).s||"")}</span></div>
+      <div class="cardflex">
+        <div class="txt">
+          <h3>${esc(S.type)} · ${esc((TYPES[S.type]||{}).n||"")}</h3>
+          <p class="sub">${((TYPES[S.type]||{}).t||[]).join(" · ")}</p>
+          <div class="rows">
+            <div><span>นิสัยเด่น</span><span>${esc((TYPES[S.type]||{}).d||"")}</span></div>
+            <div><span>ตอนเลือกกลิ่น</span><span>${esc((TYPES[S.type]||{}).s||"")}</span></div>
+          </div>
+        </div>
+        <div class="charcol">${(CFG.img["type_"+S.type] || CFG.img["char_"+w.code])
+          ? `<img src="${CFG.img["type_"+S.type] || CFG.img["char_"+w.code]}" alt="">`
+          : charSVG(w.code,96)}</div>
       </div>
     </div>
     <div class="card">
@@ -1237,24 +1285,33 @@ async function makePostcard(file){
     });
   }
   const px = 60, pw = PC_W - 120;
-  const iw = 680, ih = Math.round(iw*5/4), ix = Math.round((PC_W-iw)/2), iy = 78;
-  const mx = ix-22, my = iy-22, mw = iw+44, mh = ih+56;
-  const base = my + mh;
+  const P = CFG.photo || {w:60, x:0, y:0, frame:true};
+  const iw = Math.round(PC_W * (Number(P.w)||60) / 100);
+  const ih = Math.round(iw*5/4);
+  const ix = Math.round((PC_W-iw)/2) + (Number(P.x)||0);
+  const iy = 78 + (Number(P.y)||0);
+  const pad = P.frame ? 22 : 0, padB = P.frame ? 34 : 0;
+  const mx = ix-pad, my = iy-pad, mw = iw+pad*2, mh = ih+pad+padB;
+  const base = my + mh + (P.frame ? 0 : 24);
   const scale = Math.max(iw/bmp.width, ih/bmp.height);
   const dw = bmp.width*scale, dh = bmp.height*scale;
   const tilt = (Number(CFG.photoTilt) || 0) * Math.PI/180;
   const cxm = mx + mw/2, cym = my + mh/2;
   c.save();
   if(tilt){ c.translate(cxm, cym); c.rotate(tilt); c.translate(-cxm, -cym); }
-  c.save();
-  c.shadowColor = "rgba(20,20,15,.22)"; c.shadowBlur = 26; c.shadowOffsetY = 10;
-  c.fillStyle = "#14140F"; rrect(c,mx,my,mw,mh,22); c.fill();
-  c.restore();
+  if(P.frame){
+    c.save();
+    c.shadowColor = "rgba(20,20,15,.22)"; c.shadowBlur = 26; c.shadowOffsetY = 10;
+    c.fillStyle = "#14140F"; rrect(c,mx,my,mw,mh,22); c.fill();
+    c.restore();
+  }
   c.save(); rrect(c,ix,iy,iw,ih,14); c.clip();
   c.drawImage(bmp, ix + (iw-dw)/2, iy + (ih-dh)/2, dw, dh);
   c.restore();
-  c.strokeStyle = "rgba(20,20,15,.35)"; c.lineWidth = 1.5;
-  rrect(c,mx,my,mw,mh,22); c.stroke();
+  if(P.frame){
+    c.strokeStyle = "rgba(20,20,15,.35)"; c.lineWidth = 1.5;
+    rrect(c,mx,my,mw,mh,22); c.stroke();
+  }
   c.restore();
 
   if(CFG.img.pcbg){
@@ -1266,9 +1323,9 @@ async function makePostcard(file){
   try{
     const ch = await new Promise((res,rej) => {
       const im = new Image(); im.onload = () => res(im); im.onerror = rej;
-      im.src = CFG.img[w.code] || charDataURL(w.code);
+      im.src = CFG.img["type_"+S.type] || CFG.img["char_"+w.code] || charDataURL(w.code);
     });
-    if(CFG.img[w.code]){
+    if(CFG.img["type_"+S.type] || CFG.img["char_"+w.code]){
       const bw = 170, bh = 200, sc = Math.max(bw/ch.width, bh/ch.height);
       const dw = ch.width*sc, dh = ch.height*sc;
       c.save(); rrect(c, PC_W-px-bw, base+130, bw, bh, 16); c.clip();
@@ -1382,7 +1439,7 @@ function vCard(){
   const shotBtn = document.getElementById("shotBtn");
   const slot = document.getElementById("photoSlot");
   const tilt = Number(CFG.photoTilt) || 0;
-  if(tilt) slot.style.transform = `rotate(${tilt}deg)`;
+  slot.style.transform = tilt ? `rotate(${tilt}deg)` : "";
   const pcBtn = document.getElementById("pcBtn");
   const pcwrap = document.getElementById("pcwrap");
   const pcimg = document.getElementById("pcimg");
@@ -1399,7 +1456,7 @@ function vCard(){
     S.photoFile = f;
     S.photoURL = URL.createObjectURL(f);
     slot.classList.add("has");
-    if(tilt) slot.style.transform = `rotate(${tilt}deg)`;
+    slot.style.transform = tilt ? `rotate(${tilt}deg)` : "";
     slot.innerHTML = `<img src="${S.photoURL}" alt="รูปของคุณ"><span class="swap">เปลี่ยนรูป</span>`;
     slot.onclick = openPicker;
     shotBtn.lastChild.textContent = " เปลี่ยนรูปของคุณ ";
