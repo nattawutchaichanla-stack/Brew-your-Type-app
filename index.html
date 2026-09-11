@@ -329,7 +329,7 @@ footer{margin-top:30px;padding-top:16px;border-top:1px dashed var(--line-2);
   <footer>
     บริษัท ไชยจันลา จำกัด · RANGSAN Academy · SAO Café · RANGSAN Coffee<br>
     จองรอบถัดไป LINE @saocafe · IG saocafe_official<br>
-    <span style="opacity:.55">v28 · 10 ก.ย. 2569</span>
+    <span style="opacity:.55">v29 · 11 ก.ย. 2569</span>
   </footer>
 </div>
 <div class="admin" id="admin"><div class="adminbox" id="adminBox"></div></div>
@@ -600,7 +600,35 @@ function exportLog(){
   el.download = "byt-players.csv";
   el.click();
 }
-const APP_VER = "v28 · 10 ก.ย. 2569";
+const APP_VER = "v29 · 11 ก.ย. 2569";
+async function pullCentral(url){
+  if(!url) return null;
+  try{
+    const r = await fetch(url + (url.includes("?") ? "&" : "?") + "action=config&v=" + Date.now());
+    if(!r.ok) return null;
+    const j = await r.json();
+    return (j && j.cfg) ? j.cfg : null;
+  }catch(e){ return null; }
+}
+async function pushCentral(){
+  const url = (CFG.syncUrl || "").trim();
+  if(!url) return {ok:false, why:"ยังไม่ได้ใส่ลิงก์ฐานข้อมูลออนไลน์"};
+  const out = JSON.parse(JSON.stringify(CFG));
+  delete out.hasRemote; delete out.hasLocal;
+  const body = JSON.stringify({action:"saveConfig", cfg: out});
+  try{
+    const r = await fetch(url, {method:"POST", redirect:"follow",
+      headers:{"Content-Type":"text/plain;charset=utf-8"}, body});
+    if(r.ok) return {ok:true, why:"ส่งขึ้นส่วนกลางแล้ว ทุกเครื่องจะเห็นเมื่อเปิดใหม่"};
+    return {ok:false, why:"เซิร์ฟเวอร์ตอบกลับ " + r.status};
+  }catch(e){
+    try{
+      await fetch(url, {method:"POST", mode:"no-cors",
+        headers:{"Content-Type":"text/plain;charset=utf-8"}, body});
+      return {ok:true, why:"ส่งแล้ว (โหมดไม่รอผลตอบกลับ) — เปิดเครื่องอื่นเช็กอีกที"};
+    }catch(e2){ return {ok:false, why:"ต่อไม่ติด: " + (e2.message || "ไม่ทราบสาเหตุ")}; }
+  }
+}
 async function loadCFG(){
   let remote = null, local = null;
   try{
@@ -632,6 +660,13 @@ async function loadCFG(){
   CFG = Object.assign(JSON.parse(JSON.stringify(DEFAULTS)), merge(baked, remote, local));
   CFG.img = Object.assign({}, DEFAULTS.img,
     merge((baked && baked.img), (remote && remote.img), (local && local.img)));
+  /* ค่าที่บันทึกขึ้นส่วนกลางถือเป็นค่าหลัก ทับค่าของเครื่องนี้ */
+  const central = await pullCentral(CFG.syncUrl);
+  if(central){
+    CFG = Object.assign(CFG, merge(central));
+    CFG.img = Object.assign({}, CFG.img, merge(central.img));
+    CFG.central = true;
+  }
   CFG.worldsText = Object.assign({}, (baked && baked.worldsText) || {}, (remote && remote.worldsText) || {}, (local && local.worldsText) || {});
   CFG.hasRemote = !!(remote || baked);
   CFG.hasLocal = !!local;
@@ -776,7 +811,10 @@ function adminForm(){
     </div>
     <label>ฐานข้อมูลออนไลน์ (ไม่ใส่ก็ได้ — เก็บในเครื่องอย่างเดียว)</label>
     <input id="adSync" placeholder="วางลิงก์ Web app ของ Google Apps Script" value="${esc(CFG.syncUrl||"")}">
-    <div class="adminrow"><button class="save" id="adTest">ทดสอบการเชื่อมต่อ</button></div>
+    <div class="adminrow">
+      <button class="save" id="adTest">ทดสอบการเชื่อมต่อ</button>
+      <button class="save" id="adPush">บันทึกขึ้นส่วนกลาง</button>
+    </div>
     <p class="adminnote" id="syncNote" style="margin:6px 0 0">ใส่ลิงก์แล้วกดบันทึกก่อน แล้วค่อยกดทดสอบ · ลิงก์ต้องลงท้ายด้วย /exec และตอน Deploy ต้องตั้ง Who has access เป็น Anyone</p>
     <label>ประวัติผู้เล่น</label>
     <p class="adminnote" style="margin:0 0 8px">เก็บในเครื่องนี้เครื่องเดียว · ตอนนี้มี ${logStats().all} คน (วันนี้ ${logStats().today} คน)</p>
@@ -828,6 +866,12 @@ function adminForm(){
     const v = Math.max(-6, Math.min(6, parseFloat(tiltInput.value) || 0));
     const s = document.getElementById("photoSlot");
     if(s) s.style.transform = v ? `rotate(${v}deg)` : "";
+  };
+  document.getElementById("adPush").onclick = async () => {
+    const note = document.getElementById("syncNote");
+    note.textContent = "กำลังส่งค่าขึ้นส่วนกลาง…";
+    const r = await pushCentral();
+    note.textContent = (r.ok ? "สำเร็จ — " : "ไม่สำเร็จ — ") + r.why;
   };
   document.getElementById("adTest").onclick = async () => {
     const note = document.getElementById("syncNote");
