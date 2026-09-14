@@ -377,7 +377,7 @@ footer{margin-top:30px;padding-top:16px;border-top:1px dashed var(--line-2);
   <footer>
     บริษัท ไชยจันลา จำกัด · RANGSAN Academy · SAO Café · RANGSAN Coffee<br>
     จองรอบถัดไป LINE @saocafe · IG saocafe_official<br>
-    <span style="opacity:.55">v49 · 11 ก.ย. 2569</span>
+    <span style="opacity:.55">v50 · 11 ก.ย. 2569</span>
   </footer>
 </div>
 <div class="admin" id="admin"><div class="adminbox" id="adminBox"></div></div>
@@ -545,6 +545,8 @@ const DEFAULTS = {
   photoTilt: 0,
   photo: {w:52, x:0, y:0, ty:0, frame:true},
   syncUrl: "",
+  sbUrl: "",
+  sbKey: "",
   worldsText: {
     NT: WORLDS.NT.base.join("\n"), NF: WORLDS.NF.base.join("\n"),
     SJ: WORLDS.SJ.base.join("\n"), SP: WORLDS.SP.base.join("\n")
@@ -606,7 +608,7 @@ function logPlay(){
   const rec = {t: Date.now(), name: S.name, type: S.type, scent: S.scent,
                score: S.smellScore, tea: S.tea, top: S.top, serial: S.serial};
   const a = readLog(); a.push(rec); writeLog(a);
-  sendPlay(rec);
+  if(sbOn()) sbAddPlay(rec); else sendPlay(rec);
 }
 async function sendPlay(rec){
   if(!CFG.syncUrl) return {ok:false, why:"ยังไม่ได้ใส่ลิงก์ฐานข้อมูล"};
@@ -628,6 +630,7 @@ async function sendPlay(rec){
   }
 }
 async function remoteStats(){
+  if(sbOn()) return await sbStats();
   if(!CFG.syncUrl) return null;
   try{
     const r = await fetch(CFG.syncUrl + (CFG.syncUrl.includes("?") ? "&" : "?") + "action=stats&v=" + Date.now());
@@ -658,7 +661,7 @@ function exportLog(){
   el.download = "byt-players.csv";
   el.click();
 }
-const APP_VER = "v49 · 11 ก.ย. 2569";
+const APP_VER = "v50 · 11 ก.ย. 2569";
 async function pullCentral(url){
   if(!url) return null;
   try{
@@ -669,6 +672,7 @@ async function pullCentral(url){
   }catch(e){ return null; }
 }
 async function pushCentral(){
+  if(sbOn()) return await sbSaveConfig(JSON.parse(JSON.stringify(CFG)));
   const url = (CFG.syncUrl || "").trim();
   if(!url) return {ok:false, why:"ยังไม่ได้ใส่ลิงก์ฐานข้อมูลออนไลน์"};
   const out = JSON.parse(JSON.stringify(CFG));
@@ -686,6 +690,66 @@ async function pushCentral(){
       return {ok:true, why:"ส่งแล้ว (โหมดไม่รอผลตอบกลับ) — เปิดเครื่องอื่นเช็กอีกที"};
     }catch(e2){ return {ok:false, why:"ต่อไม่ติด: " + (e2.message || "ไม่ทราบสาเหตุ")}; }
   }
+}
+/* ---------- Supabase (ทางเลือกที่ไม่ต้องใช้ Apps Script) ---------- */
+function sbOn(){ return !!(CFG.sbUrl && CFG.sbKey); }
+function sbHead(extra){
+  return Object.assign({
+    "apikey": CFG.sbKey,
+    "Authorization": "Bearer " + CFG.sbKey,
+    "Content-Type": "application/json"
+  }, extra || {});
+}
+function sbBase(){ return CFG.sbUrl.replace(/\/+$/,"") + "/rest/v1"; }
+
+async function sbAddPlay(rec){
+  try{
+    const r = await fetch(sbBase() + "/byt_players", {
+      method:"POST", headers: sbHead({Prefer:"return=minimal"}),
+      body: JSON.stringify({
+        name: rec.name, mbti: rec.type, scent: rec.scent, score: rec.score,
+        tea: rec.tea, topping: rec.top, serial: rec.serial
+      })
+    });
+    return r.ok ? {ok:true, why:"บันทึกลง Supabase แล้ว"} : {ok:false, why:"Supabase ตอบกลับ " + r.status};
+  }catch(e){ return {ok:false, why:"ต่อ Supabase ไม่ติด: " + (e.message||"") }; }
+}
+async function sbStats(){
+  try{
+    const r = await fetch(sbBase() + "/byt_players?select=name,mbti,score,created_at&order=created_at.desc&limit=1000",
+      {headers: sbHead()});
+    if(!r.ok) return null;
+    const rows = await r.json();
+    const today = new Date().toDateString();
+    const t = rows.filter(x => new Date(x.created_at).toDateString() === today);
+    const types = {};
+    rows.forEach(x => { if(x.mbti) types[x.mbti] = (types[x.mbti]||0)+1; });
+    const best = Object.entries(types).sort((a,b)=>b[1]-a[1])[0];
+    return {
+      all: rows.length, today: t.length,
+      top: t.slice().sort((a,b)=>(b.score||0)-(a.score||0)).slice(0,5)
+             .map(x => ({name:x.name, type:x.mbti, score:x.score})),
+      bestType: best ? `${best[0]} (${best[1]} คน)` : ""
+    };
+  }catch(e){ return null; }
+}
+async function sbSaveConfig(cfg){
+  try{
+    const r = await fetch(sbBase() + "/byt_config?on_conflict=id", {
+      method:"POST",
+      headers: sbHead({Prefer:"resolution=merge-duplicates,return=minimal"}),
+      body: JSON.stringify({id:1, data: cfg})
+    });
+    return r.ok ? {ok:true, why:"ส่งค่ากลางขึ้น Supabase แล้ว"} : {ok:false, why:"Supabase ตอบกลับ " + r.status};
+  }catch(e){ return {ok:false, why:"ต่อ Supabase ไม่ติด: " + (e.message||"") }; }
+}
+async function sbLoadConfig(){
+  try{
+    const r = await fetch(sbBase() + "/byt_config?id=eq.1&select=data", {headers: sbHead()});
+    if(!r.ok) return null;
+    const rows = await r.json();
+    return (rows[0] && rows[0].data) ? rows[0].data : null;
+  }catch(e){ return null; }
 }
 async function loadCFG(){
   let remote = null, local = null;
@@ -719,7 +783,7 @@ async function loadCFG(){
   CFG.img = Object.assign({}, DEFAULTS.img,
     merge((baked && baked.img), (remote && remote.img), (local && local.img)));
   /* ค่าที่บันทึกขึ้นส่วนกลางถือเป็นค่าหลัก ทับค่าของเครื่องนี้ */
-  const central = await pullCentral(CFG.syncUrl);
+  const central = sbOn() ? await sbLoadConfig() : await pullCentral(CFG.syncUrl);
   if(central){
     CFG = Object.assign(CFG, merge(central));
     CFG.img = Object.assign({}, CFG.img, merge(central.img));
@@ -878,7 +942,11 @@ function adminForm(){
       <button class="save" id="adSave">บันทึก</button>
       <button class="close" id="adClose2">ปิด</button>
     </div>
-    <label>ฐานข้อมูลออนไลน์ (ไม่ใส่ก็ได้ — เก็บในเครื่องอย่างเดียว)</label>
+    <label>ฐานข้อมูลออนไลน์ แบบ Supabase (แนะนำ)</label>
+    <input id="adSbUrl" placeholder="https://xxxx.supabase.co" value="${esc(CFG.sbUrl||"")}">
+    <input id="adSbKey" placeholder="anon public key" value="${esc(CFG.sbKey||"")}" style="margin-top:8px">
+    <p class="adminnote" style="margin:6px 0 0">ใส่ 2 ช่องนี้แล้วระบบจะใช้ Supabase แทน Apps Script ทันที · ต้องสร้างตาราง byt_players กับ byt_config ก่อน</p>
+    <label>ฐานข้อมูลออนไลน์ แบบ Apps Script (ถ้าไม่ได้ใช้ Supabase)</label>
     <input id="adSync" placeholder="วางลิงก์ Web app ของ Google Apps Script" value="${esc(CFG.syncUrl||"")}">
     <div class="adminrow">
       <button class="save" id="adTest">ทดสอบการเชื่อมต่อ</button>
@@ -945,7 +1013,10 @@ function adminForm(){
   document.getElementById("adTest").onclick = async () => {
     const note = document.getElementById("syncNote");
     const url = document.getElementById("adSync").value.trim();
-    if(!url){ note.textContent = "ยังไม่ได้ใส่ลิงก์"; return; }
+    if(!url && !(document.getElementById("adSbUrl").value.trim())){
+      note.textContent = "ยังไม่ได้ใส่ลิงก์ Apps Script หรือ Supabase"; return; }
+    CFG.sbUrl = document.getElementById("adSbUrl").value.trim();
+    CFG.sbKey = document.getElementById("adSbKey").value.trim();
     CFG.syncUrl = url; saveCFG();
     note.textContent = "กำลังทดสอบ…";
     const send = await sendPlay({t:Date.now(), name:"ทดสอบระบบ", type:"TEST",
@@ -986,6 +1057,8 @@ function adminForm(){
       frame: document.getElementById("adPF").checked
     };
     CFG.syncUrl = g("adSync").trim();
+    CFG.sbUrl = g("adSbUrl").trim();
+    CFG.sbKey = g("adSbKey").trim();
     CFG.pin = g("adNewPin").trim() || DEFAULTS.pin;
     const ok = saveCFG(); applyCFG();
     const note = box.querySelector(".adminnote");
